@@ -1,0 +1,50 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.browser-header {
+    background-color: #A5D6A7;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.browser-header .nav-links {
+    margin-left: auto;
+}
+.browser-header .nav-links a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    margin-left: 15px;
+}
+
+/* Estilos del contenido principal */
+.content {
+    text-align: center;
+}
+
+.content h1 {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.buttons .button {
+    background-color: #4682b4; /* Color azul de los botones */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    margin: 0 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
