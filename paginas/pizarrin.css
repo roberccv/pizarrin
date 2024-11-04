@@ -130,7 +130,7 @@ body {
 }
 
 .example img {
-    width: 100%;
+    width: 55%;
     height: auto;
     border-radius: 8px;
 }
@@ -145,3 +145,4 @@ body {
     font-size: 0.9em;
     color: #666;
 }
+
