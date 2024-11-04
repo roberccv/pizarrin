@@ -20,6 +20,31 @@ body {
     font-weight: bold;
     margin-left: 15px;
 }
+.browser-header .menu-icon {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.browser-header input[type="text"] {
+    border: none;
+    outline: none;
+}
+
+.browser-header .search-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 2px 8px;
+    border-radius: 5px;
+    background-color: white;
+}
+
+.browser-header .profile-icon {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+
 
 /* Estilos del contenido principal */
 .content {
@@ -47,4 +72,76 @@ body {
     margin: 0 10px;
     cursor: pointer;
     font-weight: bold;
+}
+
+/* Contenido de los contenedores*/
+.container {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.container h1 {
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.container .image-container {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.container .image-container img {
+    border: 2px solid #9575CD;
+    width: 60%;
+    max-width: 500px;
+}
+
+.container .content h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+.container .content p {
+    color: #333;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Columnas */
+.examples {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Tres columnas de igual tamaño */
+    gap: 20px; /* Espacio entre las columnas */
+    max-width: 1200px;
+    margin: 0 auto; /* Centra el grid en la página */
+}
+
+/* Estilo para cada ejemplo */
+.example {
+    background-color: #fff;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.example img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.example h2 {
+    margin-top: 15px;
+    font-size: 1.5em;
+}
+
+.example p {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #666;
 }
