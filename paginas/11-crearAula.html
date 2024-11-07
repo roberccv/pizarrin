@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Aula</title>
+    <link rel="stylesheet" href="pizarrin.css">
+</head>
+<body>
+<div class="browser-header">
+    <div class="menu-icon">&#9776;</div>
+    <div class="search-container">
+        <input type="text" placeholder="Search">
+        <button>🔍</button>
+    </div>
+    <div class="profile-icon">👤</div>
+</div>
+
+<div class="crear-aula-container">
+    <form class="crear-aula-form">
+        <label for="nombre-aula">NOMBRE AULA</label>
+        <input type="text" id="nombre-aula" name="nombre-aula" placeholder="Ingrese el nombre del aula" required>
+
+        <label for="alumnos">ALUMNOS</label>
+        <textarea id="alumnos" name="alumnos" placeholder="Ingrese los correos de los alumnos, separados por comas" rows="5" required></textarea>
+
+        <button type="submit" class="submit-button">Solicitar</button>
+    </form>
+</div>
+</body>
+</html>
