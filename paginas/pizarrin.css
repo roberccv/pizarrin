@@ -146,7 +146,7 @@ body {
     color: #666;
 }
 /* Login container */
-.login-container {
+.login-container , .solicitar-container{
     margin: 50px auto;
     background-color: white;
     border: 1px solid #ddd;
@@ -158,38 +158,38 @@ body {
 
 }
 
-.login-container h1 {
+#titulo_form{
     font-size: 2em;
     margin-bottom: 10px;
 }
 
-.solicitar-cuenta {
+.solicitar {
     margin-bottom: 20px;
     font-size: 0.9em;
 }
 
-.solicitar-cuenta a {
+.solicitar a {
     color: #4682b4;
     text-decoration: none;
 }
 
-.solicitar-cuenta a:hover {
+.solicitar a:hover {
     text-decoration: underline;
 }
 
-.login-form {
+.login-form , .solicitar-form {
     display: flex;
     flex-direction: column;
     gap: 15px;
     text-align: left;
 }
 
-.login-form label {
+.login-form label , .solicitar-form label {
     font-weight: bold;
     margin-bottom: 5px;
 }
 
-.login-form input {
+.login-form input , .solicitar-form input {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -210,7 +210,7 @@ body {
     text-decoration: underline;
 }
 
-.login-button {
+.submit-button{
     background-color: #4682b4;
     color: white;
     padding: 10px 20px;
