@@ -13,7 +13,7 @@
 
     <div class="solicitar-container">
         <h1 class="titulo_form">Solicita tu cuenta</h1>
-        <form class="solicitar-form">
+        <form id="solicitarForm" action="05-login.html" method="post" class="solicitar-form">
             <label for="nombre">NOMBRE</label>
             <input type="text" id="nombre" name="nombre" placeholder="Señor Profesor" required>
 
@@ -31,5 +31,27 @@
             <button type="submit" class="submit-button">SOLICITAR</button>
         </form>
     </div>
+
+    <script>
+        document.getElementById('solicitarForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita el envío inmediato del formulario
+
+            // Validación adicional o lógica que quieras añadir
+            // Aquí puedes comprobar si las contraseñas coinciden, por ejemplo:
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (password !== confirmPassword) {
+                alert('Las contraseñas no coinciden. Por favor, verifícalo.');
+                return; // Detiene el envío si las contraseñas no coinciden
+            }
+
+            // Envía el formulario de forma manual
+            this.submit();
+
+            // Luego redirige a la página
+            window.location.href = '05-login.html';
+        });
+    </script>
 </body>
 </html>

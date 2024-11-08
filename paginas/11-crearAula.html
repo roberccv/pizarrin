@@ -17,7 +17,7 @@
 </div>
 
 <div class="crear-aula-container">
-    <form class="crear-aula-form">
+    <form class="crear-aula-form" id="crearAulaForm">
         <label for="nombre-aula">NOMBRE AULA</label>
         <input type="text" id="nombre-aula" name="nombre-aula" placeholder="Ingrese el nombre del aula" required>
 
@@ -27,5 +27,16 @@
         <button type="submit" class="submit-button">Solicitar</button>
     </form>
 </div>
+
+<script>
+    document.getElementById('crearAulaForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Evita el envío inmediato del formulario
+
+        // Puedes agregar aquí cualquier validación adicional
+
+        // Redirige a la página de ejemplo después de completar el formulario
+        window.location.href = '09-profesor.html';
+    });
+</script>
 </body>
 </html>

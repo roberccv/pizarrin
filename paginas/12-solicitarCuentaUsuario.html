@@ -17,7 +17,7 @@
 </div>
 
 <div class="solicitar-cuenta-container">
-    <form class="solicitar-cuenta-form">
+    <form class="solicitar-cuenta-form" id="solicitarCuentaForm">
         <label for="email">EMAIL</label>
         <input type="email" id="email" name="email" placeholder="Ingrese su email" required>
 
@@ -33,5 +33,16 @@
         <button type="submit" class="submit-button">Solicitar</button>
     </form>
 </div>
+
+<script>
+    document.getElementById('solicitarCuentaForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Evita el envío inmediato del formulario
+
+        // Aquí puedes agregar validaciones adicionales si es necesario
+
+        // Redirige a la página de ejemplo después de completar el formulario
+        window.location.href = '09-profesor.html';
+    });
+</script>
 </body>
 </html>

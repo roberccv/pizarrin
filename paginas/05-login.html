@@ -5,6 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicia Sesión</title>
     <link rel="stylesheet" href="pizarrin.css">
+    <style>
+        /* ATENCIOOOON. LEEER ESTOOO. Estilos para el modal ESTO SE BORRARÁ UNA VEZ SE HAGA UN CODIGO DE LOGIN QUE DIFERENCIE LOS PERMISOS DE LOS USUARIOS */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .modal-content button {
+            margin: 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .admin { background-color: #4682b4; color: white; }
+        .teacher { background-color: #4CAF50; color: white; }
+        .student { background-color: #FFD700; color: black; }
+
+        .modal-content button:hover {
+            opacity: 0.8;
+        }
+    </style>
 </head>
 <body>
 <div class="browser-header">
@@ -13,9 +54,9 @@
 
 <div class="login-container">
     <h1 class="titulo_form">Inicia Sesión</h1>
-    <p class="solicitar">¿Eres profesor? <a href="#">Solicita tu cuenta</a></p>
+    <p class="solicitar">¿Eres profesor? <a href="06-solicitarCuenta.html">Solicita tu cuenta</a></p>
 
-    <form class="login-form">
+    <form class="login-form" id="login-form">
         <label for="email">EMAIL</label>
         <input type="email" id="email" name="email" placeholder="SeniorProfesor@edu.com" required>
 
@@ -27,5 +68,36 @@
         <button type="submit" class="submit-button">Iniciar Sesión</button>
     </form>
 </div>
+
+<!-- Modal para elegir entre Administrador, Profesor o Alumno -->
+<div class="modal" id="roleModal">
+    <div class="modal-content">
+        <h2>Selecciona tu rol (este pop up se borrará cuando el sistema de login esté funcionando)</h2>
+        <button class="admin" onclick="redirectTo('07-administrador.html')">Administrador</button>
+        <button class="teacher" onclick="redirectTo('09-profesor.html')">Profesor</button>
+        <button class="student" onclick="redirectTo('13-alumno.html')">Alumno</button>
+    </div>
+</div>
+
+<script>
+    document.getElementById('login-form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Evita el envío inmediato del formulario
+
+        // Aquí puedes añadir validaciones adicionales si lo necesitas
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        if (email && password) {
+            // Muestra el modal para seleccionar el rol
+            document.getElementById('roleModal').style.display = 'flex';
+        }
+    });
+
+    // Función para redirigir según el rol seleccionado
+    function redirectTo(page) {
+        document.getElementById('roleModal').style.display = 'none';
+        window.location.href = page;
+    }
+</script>
 </body>
 </html>
