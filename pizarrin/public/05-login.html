@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicia Sesión</title>
     <link rel="stylesheet" href="stylesheets/pizarrin.css">
+    <script src="scripts/login.js" defer></script> <!--El defer hace que el script se cargue después del body-->
     <style>
         /* ATENCIOOOON. LEEER ESTOOO. Estilos para el modal ESTO SE BORRARÁ UNA VEZ SE HAGA UN CODIGO DE LOGIN QUE DIFERENCIE LOS PERMISOS DE LOS USUARIOS */
         .modal {
@@ -67,16 +68,6 @@
 
         <button type="submit" class="submit-button">Iniciar Sesión</button>
     </form>
-</div>
-
-<!-- Modal para elegir entre Administrador, Profesor o Alumno -->
-<div class="modal" id="roleModal">
-    <div class="modal-content">
-        <h2>Selecciona tu rol (este pop up se borrará cuando el sistema de login esté funcionando)</h2>
-        <button class="admin" onclick="redirectTo('07-administrador.html')">Administrador</button>
-        <button class="teacher" onclick="redirectTo('09-profesor.html')">Profesor</button>
-        <button class="student" onclick="redirectTo('13-alumno.html')">Alumno</button>
-    </div>
 </div>
 
 <script>

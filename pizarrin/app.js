@@ -38,4 +38,10 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+//esto  aun no va bien hehhehehehehhe CUIDADOOOO
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', '05-login.html'));
+});
+
+
 module.exports = app;

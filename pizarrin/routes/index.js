@@ -8,4 +8,6 @@ router.get('/', function(req, res, next) {
   res.sendFile(path.join(__dirname, '..', 'public', '01-pizarrin.html')); // Sirve el archivo HTML
 });
 
+
+
 module.exports = router;
