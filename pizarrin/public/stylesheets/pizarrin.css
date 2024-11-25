@@ -6,38 +6,9 @@ a, button, [role="button"], .clickable {
 
 /* Efecto espectacular en hover */
 a:hover, button:hover, .nav-links:hover, [role="button"]:hover, .clickable:hover {
-    transform: scale(1.15) rotate(5deg);
+    transform: scale(1.03);
     text-shadow: 0px 0px 10px rgba(255, 255, 255, 1), 0px 0px 15px rgba(0, 255, 255, 0.8), 0px 0px 20px rgba(255, 0, 255, 0.8);
     animation: spectacular-wiggle 0.1s ease-in-out infinite alternate, color-shift 1s ease-in-out infinite;
-}
-
-/* Animación de "baile espectacular" */
-@keyframes spectacular-wiggle {
-    0% {
-        transform: scale(1.15) rotate(1.1deg);
-    }
-    100% {
-        transform: scale(1.15) rotate(-1.1deg);
-    }
-}
-
-/* Animación de cambio de color en el texto */
-@keyframes color-shift {
-    0% {
-        color: #99ff69;
-    }
-    25% {
-        color: #ffffff;
-    }
-    50% {
-        color: #99ff69;
-    }
-    75% {
-        color: #013b09;
-    }
-    100% {
-        color: #99ff69;
-    }
 }
 
 
