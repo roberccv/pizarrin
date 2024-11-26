@@ -9,19 +9,30 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
+const bodyParser = require('body-parser');
+
+// Establece el directorio de vistas
+app.set('public', path.join(__dirname, 'public'));
+
 // Configura EJS para archivos .html
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
 //dirección login
 app.get("/login", (req, res) => {
-  const error = req.query.error ? "Usuario o contraseña incorrectos" : "";
   res.sendFile(path.join(__dirname, '.', 'public', '05-login.html'));
 });
 
+// Middleware para parsear bodies de tipo JSON
+app.use(bodyParser.json());
+
+// Middleware para parsear bodies de tipo URL-encoded. ESTO HACE QUE REQ.BODY FUNCION
+app.use(bodyParser.urlencoded({ extended: true }));
+
 // Ruta que procesa los datos del formulario de inicio de sesión
 app.post('/autentificacion_login', (req, res) => {
-  const { username, password } = req.body;
+  console.log("entra en autentifiacion")
+  const { email, password } = req.body; //<--------------------------------REQ.BODY AQUIII
 
   if (email === "prueba@correo.com" && password === "contrasenadeprueba") {
       res.send("Inicio de sesión exitoso");
