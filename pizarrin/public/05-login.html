@@ -68,6 +68,17 @@
 
         <button type="submit" class="submit-button">Iniciar Sesión</button>
     </form>
+    <script>
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            if (error) {
+                document.getElementById('error-message').textContent = 'Credenciales inválidas. Por favor, intenta de nuevo.';
+                document.getElementById('error-message').style.display = 'block';
+            }
+        };
+    </script>
+    <p id="error-message" style="display:none; color:red;"></p>
 </div>
 </body>
 </html>

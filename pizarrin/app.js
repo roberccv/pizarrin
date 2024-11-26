@@ -11,9 +11,6 @@ var app = express();
 
 const bodyParser = require('body-parser');
 
-// Establece el directorio de vistas
-app.set('public', path.join(__dirname, 'public'));
-
 // Configura EJS para archivos .html
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
@@ -37,7 +34,8 @@ app.post('/autentificacion_login', (req, res) => {
   if (email === "prueba@correo.com" && password === "contrasenadeprueba") {
       res.send("Inicio de sesión exitoso");
   } else {
-      res.send("Error en el inicio de sesión");
+      // Redirigir al usuario al login con un mensaje de error
+      res.redirect('/login?error=credenciales_invalidas');
   }
 });
 
