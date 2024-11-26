@@ -9,6 +9,27 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
+// Configura EJS para archivos .html
+app.engine('html', require('ejs').renderFile);
+app.set('view engine', 'html');
+
+//dirección login
+app.get("/login", (req, res) => {
+  const error = req.query.error ? "Usuario o contraseña incorrectos" : "";
+  res.sendFile(path.join(__dirname, '.', 'public', '05-login.html'));
+});
+
+// Ruta que procesa los datos del formulario de inicio de sesión
+app.post('/autentificacion_login', (req, res) => {
+  const { username, password } = req.body;
+
+  if (email === "prueba@correo.com" && password === "contrasenadeprueba") {
+      res.send("Inicio de sesión exitoso");
+  } else {
+      res.send("Error en el inicio de sesión");
+  }
+});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -36,11 +57,6 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
-});
-
-//esto  aun no va bien hehhehehehehhe CUIDADOOOO
-app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', '05-login.html'));
 });
 
 
