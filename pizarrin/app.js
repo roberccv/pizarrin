@@ -11,6 +11,23 @@ var app = express();
 
 const bodyParser = require('body-parser');
 
+//hashear contraseñas
+const bcrypt = require('bcrypt');
+
+// Configuración de la conexión a la base de datos
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'tu_usuario',
+  password: 'tu_contraseña',
+  database: 'loginSystem'
+});
+
+db.connect((err) => {
+  if (err) throw err;
+  console.log('Conectado a la base de datos MySQL');
+});
+
+
 // Configura EJS para archivos .html
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
