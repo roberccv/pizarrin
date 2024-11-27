@@ -2,8 +2,6 @@
 
 # Proyecto Pizarrín
 
-Un sistema de gestión de usuarios con autenticación segura utilizando Node.js, MySQL y contraseñas encriptadas.
-
 ## 🚀 Requisitos
 
 1. **MySQL**: Asegúrate de tener MySQL instalado en tu máquina.
