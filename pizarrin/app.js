@@ -11,19 +11,26 @@ var app = express();
 
 const bodyParser = require('body-parser');
 
+
+// Configuración de la conexión a la base de datos
+const mysql = require('mysql2');
+
+
 //hashear contraseñas
 const bcrypt = require('bcrypt');
 
-// Configuración de la conexión a la base de datos
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'tu_usuario',
-  password: 'tu_contraseña',
-  database: 'loginSystem'
+  user: 'app_user',
+  password: 'app_password',
+  database: 'pizarrin_db'
 });
 
 db.connect((err) => {
-  if (err) throw err;
+  if (err) {
+    console.error('Error al conectar a la base de datos:', err.message);
+    return;
+  }
   console.log('Conectado a la base de datos MySQL');
 });
 
