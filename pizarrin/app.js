@@ -1,39 +1,47 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+let createError = require('http-errors');
+let express = require('express');
+let path = require('path');
+let cookieParser = require('cookie-parser');
+let logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+let indexRouter = require('./routes/index');
+let usersRouter = require('./routes/users');
+let sqlite3 = require('sqlite3').verbose();
 
-var app = express();
+let app = express();
 
 const bodyParser = require('body-parser');
 
-
-// Configuración de la conexión a la base de datos
-const mysql = require('mysql2');
 
 
 //hashear contraseñas
 const bcrypt = require('bcrypt');
 
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'app_user',
-  password: 'app_password',
-  database: 'pizarrin_db'
-});
-
-db.connect((err) => {
+const dbFilePath = './db.sqlite'; // Ruta al archivo de la base de datos
+const db = new sqlite3.Database(dbFilePath, (err) => {
   if (err) {
-    console.error('Error al conectar a la base de datos:', err.message);
-    return;
+    console.error('Error al conectar a la base de datos SQLite:', err.message);
+    process.exit(1);
   }
-  console.log('Conectado a la base de datos MySQL');
+  console.log(`Conectado a la base de datos SQLite en ${dbFilePath}`);
 });
 
+// Crear la tabla `users` si no existe
+db.serialize(() => {
+  db.run(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT NOT NULL UNIQUE,
+      password TEXT NOT NULL
+    )
+  `, (err) => {
+    if (err) {
+      console.error('Error al crear la tabla "users":', err.message);
+      process.exit(1);
+    }
+    console.log('Tabla "users" comprobada o creada con éxito.');
+  });
+});
 
 // Configura EJS para archivos .html
 app.engine('html', require('ejs').renderFile);
@@ -61,25 +69,24 @@ app.post('/autentificacion_login', (req, res) => {
 
   // Verificar si el usuario existe en la base de datos
   const query = 'SELECT * FROM users WHERE email = ?';
-  db.query(query, [email], async (err, results) => {
+  db.get(query, [email], async (err, usuario) => {
     if (err) {
       console.error('Error al consultar la base de datos:', err.message);
       return res.status(500).send('Error interno del servidor');
     }
 
     // Si no se encuentra el usuario, redirige con un error
-    if (results.length === 0) {
+    if (!usuario) {
       console.log('Usuario no encontrado');
       return res.redirect('/login?error=credenciales_invalidas');
     }
-
-    const user = results[0]; // Tomar el primer resultado (el usuario encontrado)
+    console.log("results", usuario);
 
     // Comparar la contraseña ingresada con la almacenada en la base de datos
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, usuario.password);
 
     if (isMatch) {
-      console.log('Inicio de sesión exitoso:', user.email);
+      console.log('Inicio de sesión exitoso:', usuario.email);
       res.send('Inicio de sesión exitoso');
     } else {
       console.log('Contraseña incorrecta');
@@ -97,7 +104,7 @@ app.post('/registro', async (req, res) => {
 
     // Insertar el usuario en la base de datos
     const query = 'INSERT INTO users (email, password) VALUES (?, ?)';
-    db.query(query, [email, hashedPassword], (err, result) => {
+    db.run(query, [email, hashedPassword], (err, result) => {
       if (err) {
         console.error('Error al registrar usuario:', err.message);
         return res.status(500).send('Error al registrar usuario');
@@ -113,10 +120,11 @@ app.post('/registro', async (req, res) => {
 });
 
 
-// view engine setup
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// middleware
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
