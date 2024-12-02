@@ -19,6 +19,17 @@
 <div class="solicitudes-container">
     <h1>SOLICITUDES</h1>
     <div class="solicitudes-columns">
+        <!-- Sección de alumnos -->
+        <div class="column">
+            <h2>ALUMNOS:</h2>
+            <% solicitudes.filter(s => s.rol !== 2).forEach(solicitud => { %>
+            <div class="solicitud-item">
+                <p><%= solicitud.name %> (<%= solicitud.email %>)</p>
+                <button class="accept" onclick="aceptarSolicitud(<%= solicitud.id %>)">✔️</button>
+                <button class="deny" onclick="rechazarSolicitud(<%= solicitud.id %>)">❌</button>
+            </div>
+            <% }) %>
+        </div>
 
         <!-- Sección de profesores -->
         <div class="column">

@@ -35,6 +35,7 @@ db.serialize(() => {
     }
     console.log('Tabla "users" comprobada o creada con éxito.');
   });
+  
 });
 
 // Configuración del motor de vistas
@@ -82,15 +83,17 @@ app.get('/solicitudes', (req, res) => {
 app.post('/aceptar-solicitud', (req, res) => {
   const { id } = req.body;
 
-  const getQuery = 'SELECT * FROM registration_requests WHERE id = ?';
+  const getQuery = 'SELECT * FROM solicitudes_registro WHERE id = ?';
   const insertQuery = 'INSERT INTO users (name, email, password, rol) VALUES (?, ?, ?, ?)';
-  const deleteQuery = 'DELETE FROM registration_requests WHERE id = ?';
+  const deleteQuery = 'DELETE FROM solicitudes_registro WHERE id = ?';
 
   db.get(getQuery, [id], (err, row) => {
     if (err || !row) {
-      console.error('Error al obtener la solicitud:', err?.message || 'Solicitud no encontrada');
+      console.error('Error al obtener la solicitud:', err?.message || 'No se encontró la solicitud');
       return res.status(500).send('Error al aceptar la solicitud');
     }
+
+    console.log('Solicitud encontrada:', row);
 
     db.run(insertQuery, [row.name, row.email, row.password, row.rol], function (err) {
       if (err) {
@@ -100,7 +103,7 @@ app.post('/aceptar-solicitud', (req, res) => {
 
       db.run(deleteQuery, [id], (err) => {
         if (err) {
-          console.error('Error al eliminar solicitud:', err.message);
+          console.error('Error al eliminar la solicitud:', err.message);
           return res.status(500).send('Error al aceptar la solicitud');
         }
         res.status(200).send('Solicitud aceptada con éxito');
@@ -109,10 +112,11 @@ app.post('/aceptar-solicitud', (req, res) => {
   });
 });
 
+
 app.post('/rechazar-solicitud', (req, res) => {
   const { id } = req.body;
 
-  const query = 'DELETE FROM registration_requests WHERE id = ?';
+  const query = 'DELETE FROM solicitudes_registro WHERE id = ?';
   db.run(query, [id], function (err) {
     if (err) {
       console.error('Error al rechazar la solicitud:', err.message);
