@@ -108,7 +108,7 @@ app.post('/aceptar-solicitud', (req, res) => {
   const { id } = req.body;
 
   const getQuery = 'SELECT * FROM solicitudes_registro WHERE id = ?';
-  const insertQuery = 'INSERT INTO users (name, email, password, rol) VALUES (?, ?, ?, ?)';
+  const insertQuery = 'INSERT INTO users (name, email, password, rol, carrera) VALUES (?, ?, ?, ?, ?)';
   const deleteQuery = 'DELETE FROM solicitudes_registro WHERE id = ?';
 
   db.get(getQuery, [id], (err, row) => {
@@ -119,7 +119,7 @@ app.post('/aceptar-solicitud', (req, res) => {
 
     console.log('Solicitud encontrada:', row);
 
-    db.run(insertQuery, [row.name, row.email, row.password, row.rol], function (err) {
+    db.run(insertQuery, [row.name, row.email, row.password, row.rol, row.carrera], function (err) {
       if (err) {
         console.error('Error al insertar usuario:', err.message);
         return res.status(500).send('Error al aceptar la solicitud');

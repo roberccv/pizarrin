@@ -24,7 +24,7 @@
             <h2>ALUMNOS:</h2>
             <% solicitudes.filter(s => s.rol !== 2).forEach(solicitud => { %>
             <div class="solicitud-item">
-                <p><%= solicitud.name %> (<%= solicitud.email %>)</p>
+                <p><%= solicitud.name %> (<%= solicitud.email %>). Estudia <%= solicitud.carrera%></p>
                 <button class="accept" onclick="aceptarSolicitud(<%= solicitud.id %>)">✔️</button>
                 <button class="deny" onclick="rechazarSolicitud(<%= solicitud.id %>)">❌</button>
             </div>
@@ -87,10 +87,5 @@
         }
     }
 </script>
-
-<!-- Debugging: muestra el JSON de las solicitudes -->
-<pre>
-    <%= JSON.stringify(solicitudes, null, 2) %>
-</pre>
 </body>
 </html>
