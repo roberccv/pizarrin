@@ -51,27 +51,17 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Rutas para las vistas
+// Rutas para las vistas
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', '01-pizarrin.html'));
+});
+
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', '05-login.html'));
 });
 
 app.get('/solicitar_cuenta', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', '06-solicitarCuenta.html'));
-});
-
-app.get('/alumno', (req, res) => {
-  res.render('13-alumno' , 
-    {nombre: usario.name}); // Renderizar la plantilla EJS
-});
-
-app.get('/profesor', (req, res) => {
-  res.render('09-profesor', 
-    {nombre: usario.name}); // Renderizar la plantilla EJS
-});
-
-app.get('/admin', (req, res) => {
-  res.render('07-admin'),
-  {nombre: usario.name}; // Renderizar la plantilla EJS
 });
 
 // Procesar inicio de sesión
@@ -95,13 +85,13 @@ app.post('/autentificacion_login', (req, res) => {
     if (isMatch) {
       if (usuario.rol === 1) {
         console.log('Redirigiendo al portal de alumno...');
-        return res.redirect('/alumno');
+        return res.render('13-alumno',  {nombre: usuario.name});
       } else if (usuario.rol === 2) {
         console.log('Redirigiendo al portal de profesor...');
-        return res.redirect('/profesor');
+        return res.render('09-profesor', {nombre: usuario.name});
       } else if (usuario.rol === 3) {
         console.log('Redirigiendo al portal de admin...');
-        return res.redirect('/admin');
+        return res.render('07-admin', {nombre: usuario.name});
       } else {
         console.log('Rol no reconocido');
         return res.redirect('/login?error=rol_no_reconocido');
