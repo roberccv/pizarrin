@@ -64,6 +64,65 @@ app.get('/solicitar_cuenta', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', '06-solicitarCuenta.html'));
 });
 
+app.get('/solicitudes', (req, res) => {
+  const query = 'SELECT * FROM solicitudes_registro';
+
+  db.all(query, [], (err, rows) => {
+    if (err) {
+      console.error('Error al obtener solicitudes:', err.message);
+      return res.status(500).send('Error al obtener solicitudes');
+    }
+
+    // Renderiza el archivo EJS y pasa las solicitudes como datos
+    res.render('08-solicitudes', { solicitudes: rows });
+  });
+});
+
+
+app.post('/aceptar-solicitud', (req, res) => {
+  const { id } = req.body;
+
+  const getQuery = 'SELECT * FROM registration_requests WHERE id = ?';
+  const insertQuery = 'INSERT INTO users (name, email, password, rol) VALUES (?, ?, ?, ?)';
+  const deleteQuery = 'DELETE FROM registration_requests WHERE id = ?';
+
+  db.get(getQuery, [id], (err, row) => {
+    if (err || !row) {
+      console.error('Error al obtener la solicitud:', err?.message || 'Solicitud no encontrada');
+      return res.status(500).send('Error al aceptar la solicitud');
+    }
+
+    db.run(insertQuery, [row.name, row.email, row.password, row.rol], function (err) {
+      if (err) {
+        console.error('Error al insertar usuario:', err.message);
+        return res.status(500).send('Error al aceptar la solicitud');
+      }
+
+      db.run(deleteQuery, [id], (err) => {
+        if (err) {
+          console.error('Error al eliminar solicitud:', err.message);
+          return res.status(500).send('Error al aceptar la solicitud');
+        }
+        res.status(200).send('Solicitud aceptada con éxito');
+      });
+    });
+  });
+});
+
+app.post('/rechazar-solicitud', (req, res) => {
+  const { id } = req.body;
+
+  const query = 'DELETE FROM registration_requests WHERE id = ?';
+  db.run(query, [id], function (err) {
+    if (err) {
+      console.error('Error al rechazar la solicitud:', err.message);
+      return res.status(500).send('Error al rechazar la solicitud');
+    }
+    res.status(200).send('Solicitud rechazada con éxito');
+  });
+});
+
+
 // Procesar inicio de sesión
 app.post('/autentificacion_login', (req, res) => {
   const { email, password } = req.body;
@@ -109,15 +168,15 @@ app.post('/registro', async (req, res) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const query = 'INSERT INTO users (name, email, password, rol) VALUES (?, ?, ?, ?)';
+    const query = 'INSERT INTO solicitudes_registro (name, email, password, rol) VALUES (?, ?, ?, ?)';
     const rol = 2; // Rol predeterminado: Profesor
     db.run(query, [nombre, email, hashedPassword, rol], function (err) {
       if (err) {
-        console.error('Error al registrar usuario:', err.message);
-        return res.status(500).send('Error al registrar usuario');
+        console.error('Error al registrar solicitud:', err.message);
+        return res.status(500).send('Error al registrar solicitud');
       }
-      console.log('Usuario registrado con éxito con ID:', this.lastID);
-      res.status(201).send('Usuario registrado con éxito');
+      console.log('Solicitud de registro creada con ID:', this.lastID);
+      res.status(201).send('Solicitud enviada y pendiente de aprobación');
     });
   } catch (error) {
     console.error('Error al procesar la solicitud:', error.message);

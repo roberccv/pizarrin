@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitudes</title>
+    <link rel="stylesheet" href="stylesheets/pizarrin.css">
+</head>
+<body>
+<div class="browser-header">
+    <div class="menu-icon">&#9776;</div>
+    <div class="search-container">
+        <input type="text" placeholder="Search">
+        <button>🔍</button>
+    </div>
+    <div class="profile-icon">👤</div>
+</div>
+
+<div class="solicitudes-container">
+    <h1>SOLICITUDES</h1>
+    <div class="solicitudes-columns">
+
+        <!-- Sección de profesores -->
+        <div class="column">
+            <h2>PROFESORES:</h2>
+            <% solicitudes.filter(s => s.rol === 2).forEach(solicitud => { %>
+            <div class="solicitud-item">
+                <p><%= solicitud.name %> (<%= solicitud.email %>)</p>
+                <button class="accept" onclick="aceptarSolicitud(<%= solicitud.id %>)">✔️</button>
+                <button class="deny" onclick="rechazarSolicitud(<%= solicitud.id %>)">❌</button>
+            </div>
+            <% }) %>
+        </div>
+    </div>
+    <button class="volver-button" onclick="window.location.href='07-administrador.html'">Volver</button>
+</div>
+
+<script>
+    // Función para aceptar una solicitud
+    async function aceptarSolicitud(id) {
+        try {
+            const response = await fetch('/aceptar-solicitud', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+
+            if (response.ok) {
+                alert('Solicitud aceptada con éxito');
+                location.reload();
+            } else {
+                alert('Error al aceptar la solicitud');
+            }
+        } catch (error) {
+            console.error('Error al aceptar la solicitud:', error);
+        }
+    }
+
+    // Función para rechazar una solicitud
+    async function rechazarSolicitud(id) {
+        try {
+            const response = await fetch('/rechazar-solicitud', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
+            });
+
+            if (response.ok) {
+                alert('Solicitud rechazada con éxito');
+                location.reload();
+            } else {
+                alert('Error al rechazar la solicitud');
+            }
+        } catch (error) {
+            console.error('Error al rechazar la solicitud:', error);
+        }
+    }
+</script>
+
+<!-- Debugging: muestra el JSON de las solicitudes -->
+<pre>
+    <%= JSON.stringify(solicitudes, null, 2) %>
+</pre>
+</body>
+</html>
