@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitar Cuenta Usuario</title>
+    <link rel="stylesheet" href="stylesheets/pizarrin.css">
+</head>
+<body>
+<div class="browser-header">
+    <div class="menu-icon">&#9776;</div>
+    <div class="search-container">
+        <input type="text" placeholder="Search">
+        <button>🔍</button>
+    </div>
+    <div class="profile-icon">👤</div>
+</div>
+
+<div class="solicitar-cuenta-container">
+    <form  class="solicitar-cuenta-form" id="solicitarCuentaForm" method="POST" action="/registroAlumno">
+        <label for="email">EMAIL</label>
+        <input type="email" id="email" name="email" placeholder="Ingrese su email" required>
+
+        <label for="nombre">NOMBRE y APELLIDOS</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Ingrese su nombre y apellido" required>
+
+        <label for="carrera">CARRERA</label>
+        <input type="text" id="carrera" name="carrera" placeholder="Ingrese su carrera" required>
+
+        <button type="submit" class="submit-button">Solicitar</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('solicitarCuentaForm').addEventListener('submit', async function (event) {
+        event.preventDefault(); // Evita el envío del formulario por defecto
+      
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+      
+        try {
+          const response = await fetch('/registroAlumno', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+      
+          if (response.ok) {
+            const result = await response.json();
+            alert(
+              `Solicitud enviada correctamente.\n\n` +
+              `Contraseña generada: ${result.contrasena}\n\n` +
+              `AVISO: Si cierra este mensaje, no podrá recuperar la contraseña.`
+            );
+            this.reset(); // Limpia el formulario
+          } else {
+            alert('Error al enviar la solicitud.');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error al procesar la solicitud.');
+        }
+      });
+      
+</script>
+</body>
+</html>

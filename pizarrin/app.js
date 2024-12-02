@@ -20,13 +20,15 @@ const db = new sqlite3.Database(dbFilePath, (err) => {
 
 // Crear la tabla `users` si no existe
 db.serialize(() => {
+  // Crear la tabla `users` si no existe
   db.run(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,
       password TEXT NOT NULL,
-      rol INT NOT NULL
+      rol INT NOT NULL,
+      carrera TEXT
     )
   `, (err) => {
     if (err) {
@@ -35,8 +37,26 @@ db.serialize(() => {
     }
     console.log('Tabla "users" comprobada o creada con éxito.');
   });
-  
+
+  // Crear la tabla `solicitudes_registro` si no existe
+  db.run(`
+    CREATE TABLE IF NOT EXISTS solicitudes_registro (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL UNIQUE,
+      password TEXT NOT NULL,
+      rol INT NOT NULL,
+      carrera TEXT
+    )
+  `, (err) => {
+    if (err) {
+      console.error('Error al crear la tabla "solicitudes_registro":', err.message);
+      process.exit(1);
+    }
+    console.log('Tabla "solicitudes_registro" comprobada o creada con éxito.');
+  });
 });
+
 
 // Configuración del motor de vistas
 app.set('views', path.join(__dirname, 'views')); // Carpeta donde se encuentran tus vistas
@@ -63,6 +83,10 @@ app.get('/login', (req, res) => {
 
 app.get('/solicitar_cuenta', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', '06-solicitarCuenta.html'));
+});
+
+app.get('/solicitar_cuenta_alumno', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', '12-solicitarCuentaAlumno.html'));
 });
 
 app.get('/solicitudes', (req, res) => {
@@ -187,6 +211,52 @@ app.post('/registro', async (req, res) => {
     res.status(500).send('Error al procesar la solicitud');
   }
 });
+
+//registro alumno desde profesor
+app.post('/registroAlumno', async (req, res) => {
+  const { nombre, email, carrera } = req.body;
+
+  // Función para generar una contraseña aleatoria
+  function generarContrasena(longitud) {
+    const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?';
+    let contrasena = '';
+    for (let i = 0; i < longitud; i++) {
+      const indiceAleatorio = Math.floor(Math.random() * caracteres.length);
+      contrasena += caracteres[indiceAleatorio];
+    }
+    return contrasena;
+  }
+
+  const contrasenaAleatoria = generarContrasena(12);
+
+  try {
+    // Encripta la contraseña
+    const hashedPassword = await bcrypt.hash(contrasenaAleatoria, 10);
+
+    // Inserta los datos en la tabla `solicitudes_registro`
+    const query = 'INSERT INTO solicitudes_registro (name, email, password, rol, carrera) VALUES (?, ?, ?, ?, ?)';
+    const rol = 1; // Rol predeterminado para alumnos
+
+    db.run(query, [nombre, email, hashedPassword, rol, carrera], function (err) {
+      if (err) {
+        console.error('Error al registrar solicitud:', err.message);
+        return res.status(500).send('Error al registrar solicitud');
+      }
+
+      console.log('Solicitud de registro creada con ID:', this.lastID);
+
+      // Responde con un mensaje y la contraseña generada
+      res.status(201).json({
+        message: 'Solicitud enviada y pendiente de aprobación.',
+        contrasena: contrasenaAleatoria
+      });
+    });
+  } catch (error) {
+    console.error('Error al procesar la solicitud:', error.message);
+    res.status(500).send('Error al procesar la solicitud');
+  }
+});
+
 
 // Procesar registro de usuario
 app.post('/registroROOT', async (req, res) => {
