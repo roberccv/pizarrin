@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicita tu cuenta</title>
+    <link rel="stylesheet" href="stylesheets/pizarrin.css">
+</head>
+<body>
+    <div class="browser-header">
+        <div class="menu-icon">&#9776;</div>
+    </div>
+
+    <div class="solicitar-container">
+        <h1 class="titulo_form">CREA CUENTAS</h1>
+        <p class="notice">Creador de cuentas para desarrolladores</p>
+        <form id="solicitarForm" action="/registroROOT" method="post" class="solicitar-form">
+            <label for="nombre">NOMBRE</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Señor Profesor" required>
+
+            <label for="email">EMAIL</label>
+            <input type="email" id="email" name="email" placeholder="SeniorProfesor@edu.com" required>
+
+            <label for="password">CONTRASEÑA</label>
+            <input type="password" id="password" name="password" placeholder="********" required>
+
+            <label for="confirm-password">CONFIRMA TU CONTRASEÑA</label>
+            <input type="password" id="confirm-password" name="confirm-password" placeholder="********" required>
+
+            <label for="rol">ROL</label>
+            <input type="number" id="rol" name="rol" placeholder="1 (Alumno), 2 (Profesor), 3 (Admin)" min="1" max="3" required>
+
+            <button type="submit" class="submit-button">CREAR</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('solicitarForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita el envío inmediato del formulario
+
+            // Validación de contraseñas
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+        
+            if (password !== confirmPassword) {
+                alert('Las contraseñas no coinciden. Por favor, verifícalo.');
+                return; // Detiene el envío si las contraseñas no coinciden
+            }
+        
+            // Envía el formulario de forma manual si las contraseñas coinciden
+            this.submit();
+
+        });
+    </script>
+</body>
+</html>
