@@ -1,6 +1,5 @@
-# Sergio Díaz Paricio, Miguel Gamboa Sánchez y Roberto Cinos Vega
-
 # Proyecto Pizarrín
+Sergio Díaz Paricio, Miguel Gamboa Sánchez y Roberto Cinos Vega
 
 ## 🚀 Requisitos
 
