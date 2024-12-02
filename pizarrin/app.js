@@ -106,13 +106,13 @@ app.post('/registro', async (req, res) => {
     // Insertar el usuario en la base de datos con rol 2
     const query = 'INSERT INTO users (name, email, password, rol) VALUES (?, ?, ?, ?)';
     const rol = 2; // Asignar rol predeterminado (2: profesor)
-    db.query(query, [nombre, email, hashedPassword, rol], (err, result) => {
+    db.run(query, [nombre, email, hashedPassword, rol], function (err) {
       if (err) {
         console.error('Error al registrar usuario:', err.message);
         return res.status(500).send('Error al registrar usuario');
       }
 
-      console.log('Usuario registrado con éxito:', result);
+      console.log('Usuario registrado con éxito con ID:', this.lastID);
       res.status(201).send('Usuario registrado con éxito');
     });
   } catch (error) {
@@ -120,6 +120,7 @@ app.post('/registro', async (req, res) => {
     res.status(500).send('Error al procesar la solicitud');
   }
 });
+
 
 
 
