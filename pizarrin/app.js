@@ -32,7 +32,8 @@ db.serialize(() => {
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       email TEXT NOT NULL UNIQUE,
-      password TEXT NOT NULL
+      password TEXT NOT NULL,
+      rol INT NOT NULL
     )
   `, (err) => {
     if (err) {
@@ -102,9 +103,10 @@ app.post('/registro', async (req, res) => {
     // Encriptar la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insertar el usuario en la base de datos
-    const query = 'INSERT INTO users (email, password) VALUES (?, ?)';
-    db.run(query, [email, hashedPassword], (err, result) => {
+    // Insertar el usuario en la base de datos con rol 2
+    const query = 'INSERT INTO users (name, email, password, rol) VALUES (?, ?, ?, ?)';
+    const rol = 2; // Asignar rol predeterminado (2: profesor)
+    db.query(query, [nombre, email, hashedPassword, rol], (err, result) => {
       if (err) {
         console.error('Error al registrar usuario:', err.message);
         return res.status(500).send('Error al registrar usuario');
@@ -118,6 +120,8 @@ app.post('/registro', async (req, res) => {
     res.status(500).send('Error al procesar la solicitud');
   }
 });
+
+
 
 
 
