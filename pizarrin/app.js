@@ -55,6 +55,21 @@ db.serialize(() => {
     }
     console.log('Tabla "solicitudes_registro" comprobada o creada con éxito.');
   });
+
+  // Crear la tabla 'aulas'
+  // db.run(`
+  //   CREATE TABLE IF NOT EXISTS aulas (
+  //     id INTEGER PRIMARY KEY AUTOINCREMENT,
+  //     name TEXT NOT NULL,
+  //   )
+  // `, (err) => {
+  //   if (err) {
+  //     console.error('Error al crear la tabla "aulas":', err.message);
+  //     process.exit(1);
+  //   }
+  //   console.log('Tabla "aulas" comprobada o creada con éxito.');
+  // });
+
 });
 
 
@@ -102,6 +117,10 @@ app.get('/solicitudes', (req, res) => {
     res.render('08-solicitudes', { solicitudes: rows });
   });
 });
+
+// Sergio
+// app.get('/aulas', (req, res) => {
+  // const query = 'SELECT * FROM aulas';
 
 
 app.post('/aceptar-solicitud', (req, res) => {
@@ -278,6 +297,13 @@ app.post('/registroROOT', async (req, res) => {
     res.status(500).send('Error al procesar la solicitud');
   }
 });
+
+// Crear Aulas: 
+// app.post('/crear_aulas'), (req, res) => {
+// const { nombre, email } = req.body; #Opción 1
+// const nombre = req.body.nombreAula; #Opción 2
+// const emails = req.body.emails.split(',').map(email => email.trim()); #Opción 2
+// }
 
 // Manejo de errores
 app.use(function (req, res, next) {
