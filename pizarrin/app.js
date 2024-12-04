@@ -191,13 +191,28 @@ app.post('/autentificacion_login', (req, res) => {
     if (isMatch) {
       if (usuario.rol === 1) {
         console.log('Redirigiendo al portal de alumno...');
-        return res.render('13-alumno',  {nombre: usuario.name});
+        return res.render('13-alumno',  
+          {nombre: usuario.name,
+           email: usuario.email,
+           rol: usuario.rol,
+           carrera: usuario.carrera
+          });
       } else if (usuario.rol === 2) {
         console.log('Redirigiendo al portal de profesor...');
-        return res.render('09-profesor', {nombre: usuario.name});
+        return res.render('09-profesor',  
+          {nombre: usuario.name,
+          email: usuario.email,
+          rol: usuario.rol,
+          carrera: usuario.carrera
+         });
       } else if (usuario.rol === 3) {
         console.log('Redirigiendo al portal de admin...');
-        return res.render('07-admin', {nombre: usuario.name});
+        return res.render('07-admin',  
+          {nombre: usuario.name,
+          email: usuario.email,
+          rol: usuario.rol,
+          carrera: usuario.carrera
+         });
       } else {
         console.log('Rol no reconocido');
         return res.redirect('/login?error=rol_no_reconocido');
@@ -223,7 +238,9 @@ app.post('/registro', async (req, res) => {
         return res.status(500).send('Error al registrar solicitud');
       }
       console.log('Solicitud de registro creada con ID:', this.lastID);
-      res.status(201).send('Solicitud enviada y pendiente de aprobación');
+      // Redirigir al login con un query parameter que indique éxito
+      res.redirect(`/login?status=success`);
+
     });
   } catch (error) {
     console.error('Error al procesar la solicitud:', error.message);
@@ -269,6 +286,8 @@ app.post('/registroAlumno', async (req, res) => {
         message: 'Solicitud enviada y pendiente de aprobación.',
         contrasena: contrasenaAleatoria
       });
+      // Redirigir al login con un query parameter que indique éxito
+
     });
   } catch (error) {
     console.error('Error al procesar la solicitud:', error.message);
@@ -290,7 +309,7 @@ app.post('/registroROOT', async (req, res) => {
         return res.status(500).send('Error al registrar usuario');
       }
       console.log('Usuario registrado con éxito con ID:', this.lastID);
-      res.status(201).send('Usuario registrado con éxito');
+      res.redirect('/login');
     });
   } catch (error) {
     console.error('Error al procesar la solicitud:', error.message);

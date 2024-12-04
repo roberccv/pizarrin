@@ -68,6 +68,24 @@
 
         <button type="submit" class="submit-button">Iniciar Sesión</button>
     </form>
+    <br>
+    <br>
+    <div id="message" style="display: none; color: green;">
+        ¡Solicitud de registro creada exitosamente! Espera a que sea aprobada.
+      </div>
+      
+      <script>
+        // Obtener el parámetro 'status' de la URL
+        const params = new URLSearchParams(window.location.search);
+        const status = params.get('status');
+      
+        // Mostrar el mensaje solo si 'status' es igual a 'success'
+        if (status === 'success') {
+          const messageDiv = document.getElementById('message');
+          messageDiv.style.display = 'block'; // Mostrar el mensaje
+        }
+      </script>
+
     <script>
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
