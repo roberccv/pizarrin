@@ -351,13 +351,14 @@ app.post('/registroROOT', async (req, res) => {
       }
       if (!usuario) {
         console.log('Usuario no encontrado');
-        return res.redirect('/login?error=credenciales_invalidas');
+        return res.redirect('/error');
       }
     });
   } catch (error) {
     console.error('Error al procesar la solicitud:', error.message);
     res.status(500).send('Error al procesar la solicitud');
   }
+  
 
 
   const query = 'INSERT INTO aulas_profesor (name, id_profesor) VALUES (?, ?)';
