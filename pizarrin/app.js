@@ -731,6 +731,31 @@ app.get('/aula/:id/paginas/:paginaId/editar', authMiddleware, (req, res) => {
   });
 });
 
+app.post('/aula/:id/paginas/:paginaId/editar', authMiddleware, (req, res) => {
+  if (req.user.rol !== 2) {
+    return res.status(403).send('No tienes permiso para realizar esta acción.');
+  }
+
+  const { id: aulaId, paginaId } = req.params;
+  const titulo = req.body.titulo;
+  const texto = req.body.texto;
+  
+  const actualizar_pagina = `
+    UPDATE paginas_aula
+    SET titulo = ?, texto = ?
+    WHERE id = ? AND id_aula = ?`;
+
+  db.run(actualizar_pagina, [titulo, texto, paginaId, aulaId], function (err) {
+    if (err) {
+      console.error('Error al actualizar la página:', err.message);
+      return res.status(500).send('Error al actualizar la página.');
+    }
+
+    console.log('Página actualizada con éxito:', paginaId);
+    res.redirect(`/aula/${aulaId}/paginas`);
+  });
+});
+
 
 //-----------
 
