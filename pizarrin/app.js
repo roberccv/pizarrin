@@ -56,21 +56,40 @@ db.serialize(() => {
     console.log('Tabla "solicitudes_registro" comprobada o creada con éxito.');
   });
 
-  // Crear la tabla 'aulas'
-  // db.run(`
-  //   CREATE TABLE IF NOT EXISTS aulas (
-  //     id INTEGER PRIMARY KEY AUTOINCREMENT,
-  //     name TEXT NOT NULL,
-  //   )
-  // `, (err) => {
-  //   if (err) {
-  //     console.error('Error al crear la tabla "aulas":', err.message);
-  //     process.exit(1);
-  //   }
-  //   console.log('Tabla "aulas" comprobada o creada con éxito.');
-  // });
+  //Crear la tabla 'aulas-profesor'
+  db.run(`
+    CREATE TABLE IF NOT EXISTS aulas_profesor (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      id_profesor INTEGER NOT NULL
+    )
+  `, (err) => {
+    if (err) {
+      console.error('Error al crear la tabla "aulas_profesor":', err.message);
+      process.exit(1);
+    }
+    console.log('Tabla "aulas_profesor" comprobada o creada con éxito.');
+  });
+
+  //relaciona los alumnos con las aulas
+  db.run(
+    `CREATE TABLE IF NOT EXISTS aulas_alumnos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_aula INTEGER NOT NULL,
+    id_alumno INTEGER NOT NULL
+    )
+  `, (err) => {
+    if (err) {
+      console.error('Error al crear la tabla "aulas_alumnos":', err.message);
+      process.exit(1);
+    }
+    console.log('Tabla "aulas_alumnos" comprobada o creada con éxito.');
+  });
+    
 
 });
+
+
 
 
 // Configuración del motor de vistas
@@ -120,7 +139,7 @@ app.get('/solicitudes', (req, res) => {
 
 // Sergio
 // app.get('/aulas', (req, res) => {
-  // const query = 'SELECT * FROM aulas';
+  // const query = 'SELECT * FROM aulas-alumno where email = variable alumno'; // que cargue todas las aulas del alumno
 
 
 app.post('/aceptar-solicitud', (req, res) => {
@@ -318,11 +337,34 @@ app.post('/registroROOT', async (req, res) => {
 });
 
 // Crear Aulas: 
-// app.post('/crear_aulas'), (req, res) => {
-// const { nombre, email } = req.body; #Opción 1
-// const nombre = req.body.nombreAula; #Opción 2
-// const emails = req.body.emails.split(',').map(email => email.trim()); #Opción 2
-// }
+ app.post('/crear_aulas/:email_profe'), (req, res) => { // cuando cookies, coger de las cookies
+  //const { nombre, email } = req.body; //#Opción 1
+  const nombre = req.body.nombreAula; //#Opción 2
+  const emails_alumnos = req.body.emails.split(',').map(email => email.trim()); //Opción 2
+  const email_profe = req.params.email_profe; //Opción 2
+  const obtener_id_profesor = 'SELECT ID FROM USERS QHERE EMAIL = ?';
+  try {
+    db.get(obtener_id_profesor, [email_profe], async (err, usuario) => {
+      if (err) {
+        console.error('Error al consultar la base de datos:', err.message);
+        return res.status(500).send('Error interno del servidor');
+      }
+      if (!usuario) {
+        console.log('Usuario no encontrado');
+        return res.redirect('/error');
+      }
+    });
+  } catch (error) {
+    console.error('Error al procesar la solicitud:', error.message);
+    res.status(500).send('Error al procesar la solicitud');
+  }
+  
+
+
+  const query = 'INSERT INTO aulas_profesor (name, id_profesor) VALUES (?, ?)';
+  //const profeID = req.params.profeID;
+
+ }
 
 // Manejo de errores
 app.use(function (req, res, next) {

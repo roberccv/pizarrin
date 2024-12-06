@@ -21,7 +21,7 @@
 
 <div>
     <button class="solicitar-cuenta botones_admin" onclick="window.location.href='/solicitar_cuenta_alumno'">Solicitar cuenta alumno</button>
-    <button class="botones_admin" id="crear-aula" onclick="window.location.href='11-crearAula.html'">Crear aula</button>
+    <button class="botones_admin" id="crear-aula" onclick="enviarDatos('<%email%>')">Crear aula</button>
 </div>
 
 <!-- Main Content -->
@@ -62,4 +62,9 @@
 </div>
 
 </body>
+<script>
+    function enviarDatos(email) {
+        window.location.href = '/crear_aulas/' + email;
+    }
+</script>
 </html>
