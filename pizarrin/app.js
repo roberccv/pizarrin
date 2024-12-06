@@ -133,7 +133,10 @@ app.get('/solicitar_cuenta_alumno', authMiddleware, (req, res) => {
 
 
 
-app.get('/solicitudes', (req, res) => {
+app.get('/solicitudes', authMiddleware, (req, res) => {
+  if (req.user.rol !==3) {
+    return res.status(403).send('No tienes permiso para acceder a esta página.');
+  }
   const query = 'SELECT * FROM solicitudes_registro';
 
   db.all(query, [], (err, rows) => {
