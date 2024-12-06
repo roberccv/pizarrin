@@ -89,13 +89,7 @@ db.serialize(() => {
     }
     console.log('Tabla "aulas_alumnos" comprobada o creada con éxito.');
   });
-    
-
-});
-
-
-
-
+})
 // Configuración del motor de vistas
 app.set('views', path.join(__dirname, 'views')); // Carpeta donde se encuentran tus vistas
 app.set('view engine', 'ejs');
@@ -154,26 +148,66 @@ app.get('/dashboard/alumno', authMiddleware, (req, res) => {
   if (req.user.rol !== 1) {
     return res.status(403).send('No tienes permiso para acceder a esta página.');
   }
-  res.render('13-alumno', 
-    {nombre: req.user.nombre, // Puedes cambiar `nombre` si es necesario
-    email: req.user.email,
-    rol: req.user.rol,
-    carrera:req.user.carrera}); // Renderizar vista del alumno
+
+  const email_alumno = req.user.email; // Correo del alumno autenticado
+  const obtener_aulas = `
+    SELECT ap.id, ap.name, ap.email_profesor
+    FROM aulas_alumnos aa
+    JOIN aulas_profesor ap ON aa.id_aula = ap.id
+    WHERE aa.email_alumno = ?`;
+
+  db.all(obtener_aulas, [email_alumno], (err, rows) => {
+    if (err) {
+      console.error('Error al consultar las aulas:', err.message);
+      return res.status(500).send('Error al obtener las aulas');
+    }
+
+    console.log('Aulas obtenidas:', rows); // Verificar las aulas obtenidas para depuración
+
+    // Renderizar la vista con las aulas
+    res.render('13-alumno', {
+      nombre: req.user.nombre, // Nombre del alumno
+      email: req.user.email, // Correo del alumno
+      rol: req.user.rol, // Rol del usuario
+      carrera: req.user.carrera, // Carrera del alumno
+      aulas: rows // Lista de aulas obtenida de la base de datos
+    });
+  });
 });
+
 
 app.get('/dashboard/profesor', authMiddleware, (req, res) => {
   if (req.user.rol !== 2) {
     return res.status(403).send('No tienes permiso para acceder a esta página.');
   }
-  
-  // Pasa el email a la vista
-  res.render('09-profesor', { 
-    nombre: req.user.nombre, // Puedes cambiar `nombre` si es necesario
-    email: req.user.email,
-    rol: req.user.rol,
-    carrera:req.user.carrera   // Incluye `email` para evitar el error
+
+  const email_profesor = req.user.email; // Email del profesor autenticado
+
+  // Consulta para obtener las aulas del profesor
+  const obtener_aulas = `
+    SELECT id, name 
+    FROM aulas_profesor
+    WHERE email_profesor = ?`;
+
+  db.all(obtener_aulas, [email_profesor], (err, rows) => {
+    if (err) {
+      console.error('Error al consultar las aulas del profesor:', err.message);
+      return res.status(500).send('Error al obtener las aulas');
+    }
+
+    console.log('Aulas del profesor obtenidas:', rows); // Depuración
+
+    // Renderizar la vista del profesor con las aulas
+    res.render('09-profesor', { 
+      nombre: req.user.nombre, // Nombre del profesor
+      email: req.user.email, // Correo del profesor
+      rol: req.user.rol, // Rol del usuario
+      carrera: req.user.carrera, // Carrera (si aplica)
+      aulas: rows // Aulas obtenidas de la base de datos
+    });
   });
 });
+
 
 app.get('/crear_aula', authMiddleware, (req, res)=>{
   if (req.user.rol !== 2) {
@@ -470,7 +504,100 @@ app.post('/crear_aulas_profe', authMiddleware, (req, res) => {
   }
 });
 
+//-------------------------------------------
+//AULAAS
 
+app.get('/aula/:id', authMiddleware, (req, res) => {
+  const aulaId = req.params.id;
+  const email_alumno = req.user.email;
+  console.log('Consultando detalles para el aula:', aulaId, 'del alumno:', email_alumno); // Depuración
+
+  const obtener_aula = `
+    SELECT ap.id, ap.name, ap.email_profesor
+    FROM aulas_alumnos aa
+    JOIN aulas_profesor ap ON aa.id_aula = ap.id
+    WHERE aa.id_aula = ? AND aa.email_alumno = ?`;
+
+  db.get(obtener_aula, [aulaId, email_alumno], (err, aula) => {
+    if (err) {
+      console.error('Error al consultar el aula:', err.message);
+      return res.status(500).send('Error al obtener el aula');
+    }
+
+    if (!aula) {
+      console.warn('No se encontró el aula o el alumno no está inscrito:', aulaId);
+      return res.status(404).send('Aula no encontrada o no está inscrito');
+    }
+
+    console.log('Aula obtenida:', aula); // Depuración
+    res.render('aulaDetalle', { aula });
+  });
+});
+
+//---------------------
+//EDITAR AULAS PARA PROFES
+
+app.get('/aula/:id/editar', authMiddleware, (req, res) => {
+  if (req.user.rol !== 2) {
+    return res.status(403).send('No tienes permiso para acceder a esta página.');
+  }
+
+  const aulaId = req.params.id;
+  const email_profesor = req.user.email;
+
+  const obtener_aula = `
+    SELECT id, name 
+    FROM aulas_profesor
+    WHERE id = ? AND email_profesor = ?`;
+
+  db.get(obtener_aula, [aulaId, email_profesor], (err, aula) => {
+    if (err) {
+      console.error('Error al obtener el aula:', err.message);
+      return res.status(500).send('Error al obtener el aula');
+    }
+
+    if (!aula) {
+      return res.status(404).send('Aula no encontrada o no tienes permiso para editarla.');
+    }
+
+    // Renderizar el formulario de edición
+    res.render('editar-aula', { aula });
+  });
+});
+
+app.post('/aula/:id/editar', authMiddleware, (req, res) => {
+  if (req.user.rol !== 2) {
+    return res.status(403).send('No tienes permiso para realizar esta acción.');
+  }
+
+  const aulaId = req.params.id;
+  const email_profesor = req.user.email;
+  const nuevoNombre = req.body.name;
+
+  const actualizar_aula = `
+    UPDATE aulas_profesor
+    SET name = ?
+    WHERE id = ? AND email_profesor = ?`;
+
+  db.run(actualizar_aula, [nuevoNombre, aulaId, email_profesor], function (err) {
+    if (err) {
+      console.error('Error al actualizar el aula:', err.message);
+      return res.status(500).send('Error al actualizar el aula.');
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).send('Aula no encontrada o no tienes permiso para editarla.');
+    }
+
+    console.log('Aula actualizada con éxito:', aulaId);
+    res.redirect('/dashboard/profesor');
+  });
+});
+
+
+
+
+//-----------
 
 // Manejo de errores
 app.use(function (req, res, next) {

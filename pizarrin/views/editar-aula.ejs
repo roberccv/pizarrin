@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Aula</title>
+    <link rel="stylesheet" href="/stylesheets/pizarrin.css">
+</head>
+<body>
+    <div class="content">
+        <h1>Editar Aula</h1>
+        <form action="/aula/<%= aula.id %>/editar" method="POST">
+            <label for="name">Nombre del Aula:</label>
+            <input type="text" id="name" name="name" value="<%= aula.name %>" required>
+            <button type="submit">Guardar Cambios</button>
+        </form>
+    </div>
+</body>
+</html>
