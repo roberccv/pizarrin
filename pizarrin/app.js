@@ -65,7 +65,7 @@ db.serialize(() => {
     CREATE TABLE IF NOT EXISTS aulas_profesor (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
-      id_profesor INTEGER NOT NULL
+      email_profesor TEXT NOT NULL
     )
   `, (err) => {
     if (err) {
@@ -80,7 +80,7 @@ db.serialize(() => {
     `CREATE TABLE IF NOT EXISTS aulas_alumnos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     id_aula INTEGER NOT NULL,
-    id_alumno INTEGER NOT NULL
+    email_alumno TEXT NOT NULL
     )
   `, (err) => {
     if (err) {
@@ -410,44 +410,68 @@ app.post('/registroROOT', async (req, res) => {
   }
 });
 
-// Crear Aulas: 
- app.post('/crear_aulas_alumno', authMiddleware, (req, res) => { // cuando cookies, coger de las cookies
-  const nombre = req.body.nombreAula;
-  const emails_alumnos = req.body.emails.split(',').map(email => email.trim());
-  const email_profe = req.user.email;
-  const obtener_id_profesor = 'SELECT ID FROM USERS QHERE EMAIL = ?';
+app.post('/crear_aulas_profe', authMiddleware, (req, res) => {
+  const nombre = req.body.nombreaula;
+  const email_profe = req.user.email; // Correo del profesor tomado de las cookies
+  const emails_alumnos = req.body.emails_alumnos.split(',').map(email => email.trim()); // Separa y limpia los correos de los alumnos
+
+  // Query para insertar en la tabla `aulas_profesor`
+  const insertar_aula = 'INSERT INTO aulas_profesor (name, email_profesor) VALUES (?, ?)';
+  // Query para insertar en la tabla `aulas_alumnos`
+  const insertar_alumno = 'INSERT INTO aulas_alumnos (id_aula, email_alumno) VALUES (?, ?)';
+  // Query para verificar si los correos existen y son alumnos
+  const verificar_alumnos = 'SELECT email FROM USERS WHERE email IN (' + emails_alumnos.map(() => '?').join(',') + ') AND rol = 1';
+
   try {
-    const id_prof = db.get(obtener_id_profesor, [email_profe], async (err, usuario) => {
+    // Verificar si los correos pertenecen a alumnos registrados
+    db.all(verificar_alumnos, emails_alumnos, (err, rows) => {
       if (err) {
         console.error('Error al consultar la base de datos:', err.message);
-        return res.status(500).send('Error interno del servidor');
+        return res.status(500).send('Error interno del servidor al verificar los alumnos');
       }
-      if (!usuario) {
-        console.log('Usuario no encontrado');
-        return res.redirect('/error');
+
+      const correos_validos = rows.map(row => row.email); // Correos válidos devueltos por la consulta
+      const correos_invalidos = emails_alumnos.filter(email => !correos_validos.includes(email)); // Correos que no son válidos
+
+      if (correos_invalidos.length > 0) {
+        console.error('Correos no válidos:', correos_invalidos);
+        return res.status(400).send(`Los siguientes correos no son válidos o no pertenecen a alumnos: ${correos_invalidos.join(', ')}`);
       }
+
+      // Si todos los correos son válidos, insertar el aula
+      db.run(insertar_aula, [nombre, email_profe], function (err) {
+        if (err) {
+          console.error('Error al registrar el aula:', err.message);
+          return res.status(500).send('Error al registrar el aula');
+        }
+
+        const idAula = this.lastID; // Obtener el ID del aula recién creada
+        console.log('Aula registrada con éxito con ID:', idAula);
+
+        // Insertar cada alumno en la tabla `aulas_alumnos`
+        correos_validos.forEach(email_alumno => {
+          db.run(insertar_alumno, [idAula, email_alumno], function (err) {
+            if (err) {
+              console.error(`Error al insertar el alumno (${email_alumno}):`, err.message);
+              // No detenemos todo el proceso, pero podrías manejar errores adicionales aquí si es necesario
+            } else {
+              console.log(`Alumno con correo ${email_alumno} agregado al aula con ID: ${idAula}`);
+            }
+          });
+        });
+
+        // Responder al cliente después de completar los inserts
+        res.status(200).send('Aula y alumnos creados con éxito');
+      });
     });
   } catch (error) {
     console.error('Error al procesar la solicitud:', error.message);
     res.status(500).send('Error al procesar la solicitud');
   }
+});
 
-  const query = 'INSERT INTO aulas_profesor (name, id_profesor) VALUES (?, ?)';
-  try{
-    db.run(query, [nombre, id_prof], function (err) {
-      if (err) {
-        console.error('Error al registrar usuario:', err.message);
-        return res.status(500).send('Error al registrar usuario');
-      }
-      console.log('Usuario registrado con éxito con ID:', this.lastID);
-    });
-  }catch(error){
-    console.log(error);
-    }
-  
-  //const profeID = req.params.profeID;
 
- });
+
 // Manejo de errores
 app.use(function (req, res, next) {
   next(createError(404));
