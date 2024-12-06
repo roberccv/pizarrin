@@ -175,6 +175,12 @@ app.get('/dashboard/profesor', authMiddleware, (req, res) => {
   });
 });
 
+app.get('/crear_aula', authMiddleware, (req, res)=>{
+  if (req.user.rol !== 2) {
+    return res.status(403).send('No tienes permiso para acceder a esta página.');
+  }
+  res.render('11-crearAula');
+});
 
 app.get('/dashboard/admin', authMiddleware, (req, res) => {
   if (req.user.rol !== 3) {
@@ -405,14 +411,13 @@ app.post('/registroROOT', async (req, res) => {
 });
 
 // Crear Aulas: 
- app.post('/crear_aulas/:email_profe'), (req, res) => { // cuando cookies, coger de las cookies
-  //const { nombre, email } = req.body; //#Opción 1
-  const nombre = req.body.nombreAula; //#Opción 2
-  const emails_alumnos = req.body.emails.split(',').map(email => email.trim()); //Opción 2
-  const email_profe = req.params.email_profe; //Opción 2
+ app.post('/crear_aulas_alumno', authMiddleware, (req, res) => { // cuando cookies, coger de las cookies
+  const nombre = req.body.nombreAula;
+  const emails_alumnos = req.body.emails.split(',').map(email => email.trim());
+  const email_profe = req.user.email;
   const obtener_id_profesor = 'SELECT ID FROM USERS QHERE EMAIL = ?';
   try {
-    db.get(obtener_id_profesor, [email_profe], async (err, usuario) => {
+    const id_prof = db.get(obtener_id_profesor, [email_profe], async (err, usuario) => {
       if (err) {
         console.error('Error al consultar la base de datos:', err.message);
         return res.status(500).send('Error interno del servidor');
@@ -426,14 +431,23 @@ app.post('/registroROOT', async (req, res) => {
     console.error('Error al procesar la solicitud:', error.message);
     res.status(500).send('Error al procesar la solicitud');
   }
-  
-
 
   const query = 'INSERT INTO aulas_profesor (name, id_profesor) VALUES (?, ?)';
+  try{
+    db.run(query, [nombre, id_prof], function (err) {
+      if (err) {
+        console.error('Error al registrar usuario:', err.message);
+        return res.status(500).send('Error al registrar usuario');
+      }
+      console.log('Usuario registrado con éxito con ID:', this.lastID);
+    });
+  }catch(error){
+    console.log(error);
+    }
+  
   //const profeID = req.params.profeID;
 
- }
-
+ });
 // Manejo de errores
 app.use(function (req, res, next) {
   next(createError(404));
