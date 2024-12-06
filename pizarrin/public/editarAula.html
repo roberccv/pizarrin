@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Aula</title>
+    <link rel="stylesheet" href="stylesheets/pizarrin.css">
+</head>
+<body>
+<div class="browser-header">
+    <div class="menu-icon">&#9776;</div>
+    <div class="search-container">
+        <input type="text" placeholder="Search">
+        <button>🔍</button>
+    </div>
+    <div class="profile-icon">👤</div>
+</div>
+
+<div class="editar-aula-container">
+    <form class="editar-aula-form" id="editarAulaForm">
+        <label for="titulo">Nombre del aula</label>
+        <input type="text" id="nombre-aula" name="nombre-aula" placeholder="Ingrese el nombre nuevo del aula" required></br>
+
+        <label for="titulo">Párrafo 1</label>
+        <input type="text" id="Texto 1" name="Texto-1" placeholder="Ingrese el texto correspondiente" required></br>
+
+        <label for="titulo">Párrafo 2</label>
+        <input type="text" id="Texto 2" name="Texto-2" placeholder="Ingrese el texto correspondiente" required></br>
+
+        <label for="imagen-1">Imagen 1</label>
+        <input type="file" id="imagen-1" name="imagen-1" accept="image/*"></br>
+
+        <label for="imagen-2">Imagen 2</label>
+        <input type="file" id="imagen-2" name="imagen-2" accept="image/*"></br>
+        
+        <label for="imagen-3">Imagen 3</label>
+        <input type="file" id="imagen-2" name="imagen-2" accept="image/*"></br>
+    
+        <button type="submit" class="submit-button">Modificar</button>
+    </form>
+</div>
+
+</body>
+</html>
