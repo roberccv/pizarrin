@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Página</title>
+    <link rel="stylesheet" href="/stylesheets/pizarrin.css">
+</head>
+<body>
+    <div class="content">
+        <h1>Editar Página</h1>
+        <form action="/aula/<%= aulaId %>/paginas/<%= pagina.id %>/editar" method="POST">
+            <!-- Campo para el título -->
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" name="titulo" value="<%= pagina.titulo %>" required>
+
+            <!-- Campo para el texto -->
+            <label for="texto">Texto:</label>
+            <textarea id="texto" name="texto" required><%= pagina.texto %></textarea>
+
+            <!-- Campo para subir una nueva foto -->
+            <label for="foto">Foto (opcional):</label>
+            <input type="file" id="foto" name="foto">
+
+            <!-- Mostrar la foto actual si existe -->
+            <% if (pagina.foto) { %>
+                <p>Foto actual:</p>
+                <img src="<%= pagina.foto %>" alt="Foto de la página" width="200">
+            <% } %>
+
+            <!-- Botón para guardar cambios -->
+            <button type="submit">Guardar Cambios</button>
+        </form>
+    </div>
+</body>
+</html>
