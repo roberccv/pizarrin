@@ -75,6 +75,24 @@ db.serialize(() => {
     console.log('Tabla "aulas_profesor" comprobada o creada con éxito.');
   });
 
+    //Crear la tabla 'aulas-profesor'
+    db.run(`
+      CREATE TABLE IF NOT EXISTS paginas_aula (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id_aula INTEGER NOT NULL,
+      titulo TEXT NOT NULL,
+      texto TEXT NOT NULL,
+      foto TEXT, -- Este será el path o URL de la foto
+      FOREIGN KEY (id_aula) REFERENCES aulas_profesor (id)
+    ) 
+    `, (err) => {
+      if (err) {
+        console.error('Error al crear la tabla "paginas_aula":', err.message);
+        process.exit(1);
+      }
+      console.log('Tabla "paginas_aula" comprobada o creada con éxito.');
+    });
+
   //relaciona los alumnos con las aulas
   db.run(
     `CREATE TABLE IF NOT EXISTS aulas_alumnos (
@@ -192,7 +210,6 @@ app.get('/dashboard/profesor', authMiddleware, (req, res) => {
   db.all(obtener_aulas, [email_profesor], (err, rows) => {
     if (err) {
       console.error('Error al consultar las aulas del profesor:', err.message);
-      return res.status(500).send('Error al obtener las aulas');
     }
 
     console.log('Aulas del profesor obtenidas:', rows); // Depuración
@@ -509,30 +526,57 @@ app.post('/crear_aulas_profe', authMiddleware, (req, res) => {
 
 app.get('/aula/:id', authMiddleware, (req, res) => {
   const aulaId = req.params.id;
-  const email_alumno = req.user.email;
-  console.log('Consultando detalles para el aula:', aulaId, 'del alumno:', email_alumno); // Depuración
+  const email_usuario = req.user.email;
+  const rol_usuario = req.user.rol;
 
-  const obtener_aula = `
-    SELECT ap.id, ap.name, ap.email_profesor
-    FROM aulas_alumnos aa
-    JOIN aulas_profesor ap ON aa.id_aula = ap.id
-    WHERE aa.id_aula = ? AND aa.email_alumno = ?`;
+  console.log('Consultando detalles para el aula:', aulaId, 'del usuario:', email_usuario); // Depuración
 
-  db.get(obtener_aula, [aulaId, email_alumno], (err, aula) => {
-    if (err) {
-      console.error('Error al consultar el aula:', err.message);
-      return res.status(500).send('Error al obtener el aula');
+  let obtener_aula;
+
+  if (rol_usuario === 1) {
+    // Validación para alumnos
+    obtener_aula = `
+      SELECT ap.id, ap.name, ap.email_profesor
+      FROM aulas_alumnos aa
+      JOIN aulas_profesor ap ON aa.id_aula = ap.id
+      WHERE aa.id_aula = ? AND aa.email_alumno = ?`;
+  } else if (rol_usuario === 2) {
+    // Validación para profesores
+    obtener_aula = `
+      SELECT id, name, email_profesor
+      FROM aulas_profesor
+      WHERE id = ? AND email_profesor = ?`;
+  } else {
+    return res.status(403).send('No tienes permiso para acceder a esta página.');
+  }
+
+  const parametros = rol_usuario === 1 ? [aulaId, email_usuario] : [aulaId, email_usuario];
+
+  db.get(obtener_aula, parametros, (err, aula) => {
+    if (err || !aula) {
+      console.error('Error al consultar el aula:', err?.message);
+      return res.status(404).send('Aula no encontrada o no tienes permiso para acceder.');
     }
 
-    if (!aula) {
-      console.warn('No se encontró el aula o el alumno no está inscrito:', aulaId);
-      return res.status(404).send('Aula no encontrada o no está inscrito');
-    }
+    // Obtener las páginas del aula
+    const obtener_paginas = `
+      SELECT id, titulo, texto, foto 
+      FROM paginas_aula
+      WHERE id_aula = ?`;
 
-    console.log('Aula obtenida:', aula); // Depuración
-    res.render('aulaDetalle', { aula });
+    db.all(obtener_paginas, [aulaId], (err, paginas) => {
+      if (err) {
+        console.error('Error al obtener las páginas:', err.message);
+        return res.status(500).send('Error al obtener las páginas.');
+      }
+
+      // Renderizar los detalles del aula y sus páginas
+      res.render('aulaDetalle', { aula, paginas });
+    });
   });
 });
+
+
 
 //---------------------
 //EDITAR AULAS PARA PROFES
@@ -593,8 +637,99 @@ app.post('/aula/:id/editar', authMiddleware, (req, res) => {
     res.redirect('/dashboard/profesor');
   });
 });
+//----------------------
 
+app.get('/aula/:id/paginas', authMiddleware, (req, res) => {
+  if (req.user.rol !== 2) {
+    return res.status(403).send('No tienes permiso para acceder a esta página.');
+  }
 
+  const aulaId = req.params.id;
+  const email_profesor = req.user.email;
+
+  // Verifica que el profesor es el propietario del aula
+  const verificar_aula = `
+    SELECT id, name 
+    FROM aulas_profesor
+    WHERE id = ? AND email_profesor = ?`;
+
+  const obtener_paginas = `
+    SELECT id, titulo, texto, foto 
+    FROM paginas_aula
+    WHERE id_aula = ?`;
+
+  db.get(verificar_aula, [aulaId, email_profesor], (err, aula) => {
+    if (err || !aula) {
+      console.error('Error al verificar el aula:', err?.message);
+      return res.status(404).send('Aula no encontrada o no tienes permiso para acceder.');
+    }
+
+    db.all(obtener_paginas, [aulaId], (err, paginas) => {
+      if (err) {
+        console.error('Error al obtener las páginas:', err.message);
+        return res.status(500).send('Error al obtener las páginas.');
+      }
+
+      res.render('aulaDetalle', { aula, paginas });
+    });
+  });
+});
+
+app.get('/aula/:id/paginas/nueva', authMiddleware, (req, res) => {
+  if (req.user.rol !== 2) {
+    return res.status(403).send('No tienes permiso para acceder a esta página.');
+  }
+
+  const aulaId = req.params.id;
+  res.render('crearPagina', { aulaId });
+});
+
+app.post('/aula/:id/paginas/nueva', authMiddleware, (req, res) => {
+  if (req.user.rol !== 2) {
+    return res.status(403).send('No tienes permiso para realizar esta acción.');
+  }
+
+  const aulaId = req.params.id;
+  const titulo = req.body.titulo;
+  const texto = req.body.texto;
+  const foto = req.file ? `/uploads/${req.file.filename}` : null; // Manejo de fotos opcionales
+
+  const insertar_pagina = `
+    INSERT INTO paginas_aula (id_aula, titulo, texto, foto)
+    VALUES (?, ?, ?, ?)`;
+
+  db.run(insertar_pagina, [aulaId, titulo, texto, foto], function (err) {
+    if (err) {
+      console.error('Error al crear la página:', err.message);
+      return res.status(500).send('Error al crear la página.');
+    }
+
+    console.log('Página creada con éxito:', this.lastID);
+    res.redirect(`/aula/${aulaId}/paginas`);
+  });
+});
+
+app.get('/aula/:id/paginas/:paginaId/editar', authMiddleware, (req, res) => {
+  if (req.user.rol !== 2) {
+    return res.status(403).send('No tienes permiso para acceder a esta página.');
+  }
+
+  const { id: aulaId, paginaId } = req.params;
+
+  const obtener_pagina = `
+    SELECT id, titulo, texto, foto
+    FROM paginas_aula
+    WHERE id = ? AND id_aula = ?`;
+
+  db.get(obtener_pagina, [paginaId, aulaId], (err, pagina) => {
+    if (err || !pagina) {
+      console.error('Error al obtener la página:', err?.message);
+      return res.status(404).send('Página no encontrada.');
+    }
+
+    res.render('editar-pagina', { pagina, aulaId });
+  });
+});
 
 
 //-----------
