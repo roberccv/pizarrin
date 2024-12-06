@@ -251,10 +251,9 @@ app.post('/autentificacion_login', (req, res) => {
 
     if (isMatch) {
       // Configurar cookie con el email y el rol
-      res.cookie('user', JSON.stringify({ email: usuario.email, rol: usuario.rol }), {
+      res.cookie('user', JSON.stringify({ email: usuario.email, rol: usuario.rol, carrera: usuario.carrera, nombre: usuario.name, id: usuario.id  }), {
         maxAge: 24 * 60 * 60 * 1000, // 1 día
         httpOnly: true, // Solo accesible desde el servidor
-        sameSite: 'strict', // Protege contra ataques CSRF
       });
 
       // Redirigir al dashboard correspondiente
