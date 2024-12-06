@@ -123,9 +123,15 @@ app.get('/solicitar_cuenta', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', '06-solicitarCuenta.html'));
 });
 
-app.get('/solicitar_cuenta_alumno', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', '12-solicitarCuentaAlumno.html'));
+app.get('/solicitar_cuenta_alumno', authMiddleware, (req, res) => {
+  if (req.user.rol !== 2) {
+    return res.status(403).send('No tienes permiso para acceder a esta página.');
+  } else{
+    res.render('12-solicitarCuentaAlumno');
+  }
 });
+
+
 
 app.get('/solicitudes', (req, res) => {
   const query = 'SELECT * FROM solicitudes_registro';
