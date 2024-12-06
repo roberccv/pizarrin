@@ -21,12 +21,10 @@
                     <p><%= pagina.texto %></p>
                     <% if (pagina.foto) { %>
                         <img src="<%= pagina.foto %>" alt="Foto de la página" width="200">
-                    <% } %>
-                    <div class="<%= rol === 1 = 'alumno' : 'profesor' %>"> 
+                    <% } %>                    
                         <button onclick="window.location.href='/aula/<%= aula.id %>/paginas/<%= pagina.id %>/editar'"> <!-- Ocultado para los alumnos en el CSS -->
                             Editar Página
-                        </button>
-                    </div>
+                        </button>                    
                 </div>
             <% }) %>
         <% } else { %>
