@@ -399,5 +399,60 @@ button.deny:hover {
     display: block;
 }
 
+/* Lista de páginas (estilo de tarjetas) */
+.pages-list {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+}
+
+.pages-list .page {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    padding: 20px;
+    width: 200px;
+    transition: transform 0.3s ease;
+}
+
+.pages-list .page:hover {
+    transform: translateY(-5px);
+}
+
+.pages-list .page img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.pages-list .page h2 {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.pages-list .page p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.pages-list .page button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.pages-list .page button:hover {
+    background-color: #45a049;
+}
 
 

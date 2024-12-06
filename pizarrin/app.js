@@ -571,7 +571,7 @@ app.get('/aula/:id', authMiddleware, (req, res) => {
       }
 
       // Renderizar los detalles del aula y sus páginas
-      res.render('aulaDetalle', { aula, paginas });
+      res.render('aulaDetalle', { aula, paginas, });
     });
   });
 });

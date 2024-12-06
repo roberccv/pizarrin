@@ -1,3 +1,9 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= aula.name %></title>
+    <link rel="stylesheet" href="/stylesheets/pizarrin.css">
+</head>
 <div class="content">
     <!-- Detalles del Aula -->
     <h1>Detalles del Aula</h1>
@@ -16,9 +22,11 @@
                     <% if (pagina.foto) { %>
                         <img src="<%= pagina.foto %>" alt="Foto de la página" width="200">
                     <% } %>
-                    <button onclick="window.location.href='/aula/<%= aula.id %>/paginas/<%= pagina.id %>/editar'">
-                        Editar Página
-                    </button>
+                    <div class="<%= rol === 1 = 'alumno' : 'profesor' %>"> 
+                        <button onclick="window.location.href='/aula/<%= aula.id %>/paginas/<%= pagina.id %>/editar'"> <!-- Ocultado para los alumnos en el CSS -->
+                            Editar Página
+                        </button>
+                    </div>
                 </div>
             <% }) %>
         <% } else { %>
