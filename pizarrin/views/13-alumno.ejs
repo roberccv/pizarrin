@@ -14,8 +14,14 @@
         <button>🔍</button>
     </div>
     <div class="nav-links">
-        <a href="#"><%= email %></a>
+        <div class="dropdown">
+            <a href="#" class="dropdown-toggle"><%= email %></a>
+            <div class="dropdown-menu">
+                <button onclick="window.location.href='/logout'">Logout</button>
+            </div>
+        </div>
     </div>
+    
     <div class="profile-icon">👤</div> 
 </div>
 

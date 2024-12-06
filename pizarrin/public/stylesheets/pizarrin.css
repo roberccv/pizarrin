@@ -353,6 +353,51 @@ button.deny:hover {
     background-color: #8EBF8E;
 }
 
+.nav-links {
+    position: relative;
+    font-family: Arial, sans-serif;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-toggle {
+    text-decoration: none;
+    color: #333;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 10;
+}
+
+.dropdown-menu button {
+    background-color: #ff5858;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.dropdown-menu button:hover {
+    background-color: #ff0000;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
 
 
 
