@@ -18,6 +18,10 @@ const db = new sqlite3.Database(dbFilePath, (err) => {
   console.log(`Conectado a la base de datos SQLite en ${dbFilePath}`);
 });
 
+// Configurar cookie-parser
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true })); // Para manejar datos de formularios
+
 // Crear la tabla `users` si no existe
 db.serialize(() => {
   // Crear la tabla `users` si no existe
@@ -137,6 +141,44 @@ app.get('/solicitudes', (req, res) => {
   });
 });
 
+app.get('/dashboard/alumno', authMiddleware, (req, res) => {
+  if (req.user.rol !== 1) {
+    return res.status(403).send('No tienes permiso para acceder a esta página.');
+  }
+  res.render('13-alumno', 
+    {nombre: req.user.nombre, // Puedes cambiar `nombre` si es necesario
+    email: req.user.email,
+    rol: req.user.rol,
+    carrera:req.user.carrera}); // Renderizar vista del alumno
+});
+
+app.get('/dashboard/profesor', authMiddleware, (req, res) => {
+  if (req.user.rol !== 2) {
+    return res.status(403).send('No tienes permiso para acceder a esta página.');
+  }
+  
+  // Pasa el email a la vista
+  res.render('09-profesor', { 
+    nombre: req.user.nombre, // Puedes cambiar `nombre` si es necesario
+    email: req.user.email,
+    rol: req.user.rol,
+    carrera:req.user.carrera   // Incluye `email` para evitar el error
+  });
+});
+
+
+app.get('/dashboard/admin', authMiddleware, (req, res) => {
+  if (req.user.rol !== 3) {
+    return res.status(403).send('No tienes permiso para acceder a esta página.');
+  }
+  res.render('07-admin', {
+    nombre: req.user.nombre, // Puedes cambiar `nombre` si es necesario
+    email: req.user.email,
+    rol: req.user.rol,
+    carrera:req.user.carrera}); // Renderizar vista del admin
+});
+
+
 // Sergio
 // app.get('/aulas', (req, res) => {
   // const query = 'SELECT * FROM aulas-alumno where email = variable alumno'; // que cargue todas las aulas del alumno
@@ -208,30 +250,20 @@ app.post('/autentificacion_login', (req, res) => {
     const isMatch = await bcrypt.compare(password, usuario.password);
 
     if (isMatch) {
+      // Configurar cookie con el email y el rol
+      res.cookie('user', JSON.stringify({ email: usuario.email, rol: usuario.rol }), {
+        maxAge: 24 * 60 * 60 * 1000, // 1 día
+        httpOnly: true, // Solo accesible desde el servidor
+        sameSite: 'strict', // Protege contra ataques CSRF
+      });
+
+      // Redirigir al dashboard correspondiente
       if (usuario.rol === 1) {
-        console.log('Redirigiendo al portal de alumno...');
-        return res.render('13-alumno',  
-          {nombre: usuario.name,
-           email: usuario.email,
-           rol: usuario.rol,
-           carrera: usuario.carrera
-          });
+        return res.redirect('/dashboard/alumno');
       } else if (usuario.rol === 2) {
-        console.log('Redirigiendo al portal de profesor...');
-        return res.render('09-profesor',  
-          {nombre: usuario.name,
-          email: usuario.email,
-          rol: usuario.rol,
-          carrera: usuario.carrera
-         });
+        return res.redirect('/dashboard/profesor');
       } else if (usuario.rol === 3) {
-        console.log('Redirigiendo al portal de admin...');
-        return res.render('07-admin',  
-          {nombre: usuario.name,
-          email: usuario.email,
-          rol: usuario.rol,
-          carrera: usuario.carrera
-         });
+        return res.redirect('/dashboard/admin');
       } else {
         console.log('Rol no reconocido');
         return res.redirect('/login?error=rol_no_reconocido');
@@ -242,6 +274,34 @@ app.post('/autentificacion_login', (req, res) => {
     }
   });
 });
+
+
+//Middleware para verificar las coooookiiieees galletitiiiis
+function authMiddleware(req, res, next) {
+  const userCookie = req.cookies.user;
+
+  if (!userCookie) {
+    console.log('No se encontró la cookie de usuario.');
+    return res.redirect('/login?error=no_autenticado');
+  }
+
+  try {
+    const usuario = JSON.parse(userCookie); // Parsear la cookie
+    req.user = usuario; // Pasar los datos del usuario al request
+    next(); // Continuar con la siguiente función
+  } catch (error) {
+    console.error('Error al procesar la cookie:', error.message);
+    return res.redirect('/login?error=error_cookie');
+  }
+}
+
+//logout + cookies
+app.get('/logout', (req, res) => {
+  res.clearCookie('user'); // Eliminar la cookie
+  res.redirect('/login'); // Redirigir al login
+});
+
+
 
 // Procesar registro de usuario
 app.post('/registro', async (req, res) => {
