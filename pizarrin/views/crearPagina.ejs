@@ -1,15 +1,15 @@
 <div class="content">
     <h1>Crear Nueva Página</h1>
-    <form action="/aula/<%= aulaId %>/paginas/nueva" method="POST">
-        <label for="titulo">Título:</label>
-        <input type="text" id="titulo" name="titulo" required>
-
-        <label for="texto">Texto:</label>
-        <textarea id="texto" name="texto" required></textarea>
-
-        <label for="foto">Foto (opcional):</label>
-        <input type="file" id="foto" name="foto">
-
-        <button type="submit">Crear Página</button>
+    <form action="/aula/<%= aulaId %>/paginas/nueva" method="POST" enctype="multipart/form-data">
+            <label for="titulo">Título:</label>
+            <input type="text" id="titulo" name="titulo" required>
+          
+            <label for="texto">Texto:</label>
+            <textarea id="texto" name="texto" required></textarea>
+          
+            <label for="foto">Foto (opcional):</label>
+            <input type="file" id="foto" name="foto">
+          
+            <button type="submit">Crear Página</button>    
     </form>
 </div>

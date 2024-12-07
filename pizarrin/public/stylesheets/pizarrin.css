@@ -65,12 +65,13 @@ body {
 /* Estilos del contenido principal */
 .content {
     text-align: center;
+    margin-top: 200px;
 }
 
 .content h1 {
     font-size: 2em;
     font-weight: bold;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .buttons {
@@ -453,6 +454,10 @@ button.deny:hover {
 
 .pages-list .page button:hover {
     background-color: #45a049;
+}
+
+.escondiditos{
+    display: none; 
 }
 
 
