@@ -18,6 +18,16 @@ body {
     padding: 0;
 }
 
+.imagen-login{
+    margin-top: 10;
+    padding-top: 0;
+}
+
+.wallpaper {
+    background-image: url('/images/wallpaper_login.png')
+    
+}
+
 .browser-header {
     background-color: #A5D6A7;
     padding: 10px 20px;
@@ -53,7 +63,7 @@ body {
     border: 1px solid #ccc;
     padding: 2px 8px;
     border-radius: 5px;
-    background-color: white;
+    /*background-color: white;*/
 }
 
 .browser-header .profile-icon {
