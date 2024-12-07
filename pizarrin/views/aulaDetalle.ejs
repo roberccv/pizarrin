@@ -5,7 +5,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <link rel="stylesheet" href="/stylesheets/pizarrin.css">
 </head>
-<div class="content">
+<div class="contentA">
     <!-- Detalles del Aula -->
          <!-- Contenedor de Notificaciones -->
 <div class="notifications" id="notifications"></div>
@@ -14,7 +14,7 @@
     <p>Profesor: <%= aula.email_profesor %></p>
 
     <!-- Páginas del Aula -->
-    <h1>Páginas de <%= aula.name %></h1>
+    <h3>Páginas de <%= aula.name %></h3>
     <button class="<%= clase_boton %>" onclick="window.location.href='/aula/<%= aula.id %>/paginas/nueva'">Crear Nueva Página</button>
     <div class="pages-list">
         <% if (paginas.length > 0) { %>

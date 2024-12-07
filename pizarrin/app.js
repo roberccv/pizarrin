@@ -169,7 +169,14 @@ app.get('/solicitar_cuenta_alumno', authMiddleware, (req, res) => {
   }
 });
 
-
+// Bloqueo el crearCuentas para que solo puedan acceder los administradores
+app.get('/crearCuentas', authMiddleware, (req, res) => {
+  if (req.user.rol !== 3) {
+    return res.status(403).send('No tienes permiso para acceder a esta página.');
+  } else{
+    res.render('crearCuentas');
+  }
+});
 
 app.get('/solicitudes', authMiddleware, (req, res) => {
   if (req.user.rol !==3) {
