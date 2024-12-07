@@ -2,10 +2,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= aula.name %></title>
+    <script src="/socket.io/socket.io.js"></script>
     <link rel="stylesheet" href="/stylesheets/pizarrin.css">
 </head>
 <div class="content">
     <!-- Detalles del Aula -->
+         <!-- Contenedor de Notificaciones -->
+<div class="notifications" id="notifications"></div>
     <h1>Detalles del Aula</h1>
     <h2><%= aula.name %></h2>
     <p>Profesor: <%= aula.email_profesor %></p>
@@ -31,4 +34,35 @@
             <p>No hay páginas creadas para este aula.</p>
         <% } %>
     </div>
+<script>
+    const socket = io(); // Conexión con el servidor Socket.IO
+
+    // Obtener el aulaId desde el servidor
+    const aulaId = "<%= aula.id %>"; // Variable dinámica generada por EJS con el ID del aula
+    
+    // Unirse a la sala del aula específica
+    socket.emit('joinAula', { aulaId });
+    
+    // Escucha el evento 'notificacion' desde el servidor
+    socket.on('notificacion', (data) => {
+      console.log('[INFO] Notificación recibida:', data.message);
+    
+      // Selecciona el contenedor de notificaciones
+      const notificationsDiv = document.getElementById('notifications');
+    
+      // Crea un nuevo elemento para la notificación
+      const notification = document.createElement('div');
+      notification.classList.add('notification'); // Aplica estilo CSS
+      notification.innerText = data.message; // Mensaje enviado desde el servidor
+    
+      // Añade la notificación al contenedor
+      notificationsDiv.appendChild(notification);
+    
+      // Elimina la notificación después de 5 segundos
+      setTimeout(() => {
+        notificationsDiv.removeChild(notification);
+      }, 5000);
+    });
+    
+</script>
 </div>

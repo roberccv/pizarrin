@@ -7,7 +7,16 @@ let sqlite3 = require('sqlite3').verbose();
 let bodyParser = require('body-parser');
 let bcrypt = require('bcrypt');
 
+
 const app = express();
+
+
+const http = require('http');
+const { Server } = require('socket.io');
+
+const server = http.createServer(app);
+const io = new Server(server); // Socket.IO para WebSocket
+
 
 const dbFilePath = './db.sqlite'; // Ruta al archivo de la base de datos
 const db = new sqlite3.Database(dbFilePath, (err) => {
@@ -16,6 +25,21 @@ const db = new sqlite3.Database(dbFilePath, (err) => {
     process.exit(1);
   }
   console.log(`Conectado a la base de datos SQLite en ${dbFilePath}`);
+});
+
+// Configuración de eventos Socket.IO
+io.on('connection', (socket) => {
+  console.log('[INFO] Cliente conectado:', socket.id);
+
+  socket.on('joinAula', (data) => {
+    const { aulaId } = data;
+    socket.join(`aula-${aulaId}`);
+    console.log(`[INFO] Cliente ${socket.id} se unió al aula ${aulaId}`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('[INFO] Cliente desconectado:', socket.id);
+  });
 });
 
 // Configurar cookie-parser
@@ -650,24 +674,13 @@ const upload = require('./routes/upload.js'); // Asegúrate de importar el archi
 
 app.post('/aula/:id/paginas/nueva', authMiddleware, upload.single('foto'), (req, res) => {
   if (req.user.rol !== 2) {
-    console.error(`[ERROR] Usuario no autorizado intentó crear una página (Email: ${req.user.email})`);
     return res.status(403).send('No tienes permiso para realizar esta acción.');
   }
 
   const aulaId = req.params.id;
   const titulo = req.body.titulo;
   const texto = req.body.texto;
-
-  console.log('El archivo req.file: ', req.file);
-  // Obtener la ruta relativa de la imagen cargada
   const foto = req.file ? `/upload_images/${req.file.filename}` : null;
-  console.log(foto);
-
-  if (req.file) {
-    console.log(`[INFO] Imagen guardada correctamente: ${foto}`);
-  } else {
-    console.warn(`[WARN] No se subió ninguna imagen para esta página.`);
-  }
 
   const insertar_pagina = `
     INSERT INTO paginas_aula (id_aula, titulo, texto, foto)
@@ -675,14 +688,21 @@ app.post('/aula/:id/paginas/nueva', authMiddleware, upload.single('foto'), (req,
 
   db.run(insertar_pagina, [aulaId, titulo, texto, foto], function (err) {
     if (err) {
-      console.error(`[ERROR] Error al crear la página: ${err.message}`);
+      console.error('[ERROR] Error al crear la página:', err.message);
       return res.status(500).send('Error al crear la página.');
     }
 
-    console.log(`[INFO] Página creada con éxito (ID: ${this.lastID})`);
-    res.redirect(`/aula/${aulaId}/paginas`);
+    // Emitir notificación a los estudiantes del aula
+    console.log("Este es el aulaId:", aulaId)
+    io.to(`aula-${aulaId}`).emit('notificacion', {
+      message: `Se ha publicado una nueva página: "${titulo}" en el aula.`,
+    });
+
+    console.log('[INFO] Página creada con éxito (ID:', this.lastID, ')');
+    res.redirect(`/aula/${aulaId}`);
   });
 });
+
 
 
 
@@ -716,7 +736,7 @@ app.post('/aula/:id/paginas/:paginaId/editar', authMiddleware, (req, res) => {
   const { id: aulaId, paginaId } = req.params;
   const titulo = req.body.titulo;
   const texto = req.body.texto;
-  
+
   const actualizar_pagina = `
     UPDATE paginas_aula
     SET titulo = ?, texto = ?
@@ -724,15 +744,47 @@ app.post('/aula/:id/paginas/:paginaId/editar', authMiddleware, (req, res) => {
 
   db.run(actualizar_pagina, [titulo, texto, paginaId, aulaId], function (err) {
     if (err) {
-      console.error('Error al actualizar la página:', err.message);
+      console.error('[ERROR] Error al actualizar la página:', err.message);
       return res.status(500).send('Error al actualizar la página.');
     }
 
-    console.log('Página actualizada con éxito:', paginaId);
-    res.redirect(`/aula/${aulaId}/paginas`);
+    // Emitir notificación a los estudiantes del aula
+    io.to(`aula-${aulaId}`).emit('notificacion', {
+      message: `Se ha editado la página: "${titulo}" en el aula.`,
+    });
+
+    console.log('[INFO] Página actualizada con éxito (ID:', paginaId, ')');
+    res.redirect(`/aula/${aulaId}`);
   });
 });
 
+
+app.post('/aula/:id/paginas/:paginaId/eliminar', authMiddleware, (req, res) => {
+  if (req.user.rol !== 2) {
+    return res.status(403).send('No tienes permiso para realizar esta acción.');
+  }
+
+  const { id: aulaId, paginaId } = req.params;
+
+  const eliminar_pagina = `
+    DELETE FROM paginas_aula
+    WHERE id = ? AND id_aula = ?`;
+
+  db.run(eliminar_pagina, [paginaId, aulaId], function (err) {
+    if (err) {
+      console.error('[ERROR] Error al eliminar la página:', err.message);
+      return res.status(500).send('Error al eliminar la página.');
+    }
+
+    // Emitir notificación a los estudiantes del aula
+    io.to(`aula-${aulaId}`).emit('notificacion', {
+      message: `Se ha eliminado una página en el aula.`,
+    });
+
+    console.log('[INFO] Página eliminada con éxito (ID:', paginaId, ')');
+    res.redirect(`/aula/${aulaId}`);
+  });
+});
 
 //-----------
 
@@ -749,4 +801,4 @@ app.use(function (err, req, res, next) {
 });
 
 // Exportar la app
-module.exports = app;
+module.exports = {app,server};

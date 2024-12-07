@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuestra Pizarra Más Popular</title>
     <link rel="stylesheet" href="/stylesheets/pizarrin.css">
+    <style>
+        .notifications {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+        .notification {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
 <div class="browser-header">
@@ -21,8 +41,7 @@
             </div>
         </div>
     </div>
-    
-    <div class="profile-icon">👤</div> 
+    <div class="profile-icon">👤</div>
 </div>
 
 <!-- Main Content -->
@@ -42,7 +61,6 @@
         <% } %>
     </div>
 </div>
-
 
 </body>
 </html>
