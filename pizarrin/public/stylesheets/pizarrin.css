@@ -16,7 +16,6 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
 }
 
 .browser-header {
@@ -64,7 +63,7 @@ body {
 
 /* Estilos del contenido principal */
 .content {
-    text-align: center;
+    text-align: center; 
 }
 
 .content h1 {
@@ -455,4 +454,6 @@ button.deny:hover {
     background-color: #45a049;
 }
 
-
+.escondiditos{
+    display: none;
+}
