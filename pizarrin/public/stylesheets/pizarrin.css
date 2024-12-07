@@ -81,6 +81,11 @@ body {
 .content {
     text-align: center;
     margin-top: 200px;
+    background-color: white;
+    border-radius: 20px;
+    margin-left: 40%;
+    margin-right: 40%;
+    padding: 15px;
 }
 
 .content h1 {
