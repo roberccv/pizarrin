@@ -24,9 +24,15 @@ body {
 }
 
 .wallpaper {
-    background-image: url('/images/wallpaper_login.png')
-    
+  width: 100%;
+  min-height: 100vh; /* Asegura que ocupe toda la altura de la ventana */
+  flex-direction: column;
+  justify-content: center; /* Centra los elementos verticalmente */
+  background-image: url('/images/wallpaper_login.png'); /* Imagen de fondo opcional */
+  background-size: cover; /* Asegura que la imagen de fondo cubra todo */
+  background-repeat: no-repeat;
 }
+
 
 .browser-header {
     background-color: #A5D6A7;
