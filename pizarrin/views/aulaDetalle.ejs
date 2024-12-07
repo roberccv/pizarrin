@@ -12,7 +12,7 @@
 
     <!-- Páginas del Aula -->
     <h1>Páginas de <%= aula.name %></h1>
-    <button onclick="window.location.href='/aula/<%= aula.id %>/paginas/nueva'">Crear Nueva Página</button>
+    <button class="<%= clase_boton %>" onclick="window.location.href='/aula/<%= aula.id %>/paginas/nueva'">Crear Nueva Página</button>
     <div class="pages-list">
         <% if (paginas.length > 0) { %>
             <% paginas.forEach(pagina => { %>
@@ -22,7 +22,7 @@
                     <% if (pagina.foto) { %>
                         <img src="<%= pagina.foto %>" alt="Foto de la página" width="200">
                     <% } %>                    
-                        <button onclick="window.location.href='/aula/<%= aula.id %>/paginas/<%= pagina.id %>/editar'"> <!-- Ocultado para los alumnos en el CSS -->
+                        <button class="<%= clase_boton %>" onclick="window.location.href='/aula/<%= aula.id %>/paginas/<%= pagina.id %>/editar'"> <!-- Ocultado para los alumnos en el CSS -->
                             Editar Página
                         </button>                    
                 </div>

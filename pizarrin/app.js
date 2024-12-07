@@ -120,6 +120,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/upload_images', express.static('upload_images'));
+
 
 // Rutas para las vistas
 // Rutas para las vistas
@@ -243,12 +245,6 @@ app.get('/dashboard/admin', authMiddleware, (req, res) => {
     rol: req.user.rol,
     carrera:req.user.carrera}); // Renderizar vista del admin
 });
-
-
-// Sergio
-// app.get('/aulas', (req, res) => {
-  // const query = 'SELECT * FROM aulas-alumno where email = variable alumno'; // que cargue todas las aulas del alumno
-
 
 app.post('/aceptar-solicitud', (req, res) => {
   const { id } = req.body;
@@ -528,7 +524,7 @@ app.get('/aula/:id', authMiddleware, (req, res) => {
   const aulaId = req.params.id;
   const email_usuario = req.user.email;
   const rol_usuario = req.user.rol;
-
+  let clase_boton;
   console.log('Consultando detalles para el aula:', aulaId, 'del usuario:', email_usuario); // Depuración
 
   let obtener_aula;
@@ -540,12 +536,14 @@ app.get('/aula/:id', authMiddleware, (req, res) => {
       FROM aulas_alumnos aa
       JOIN aulas_profesor ap ON aa.id_aula = ap.id
       WHERE aa.id_aula = ? AND aa.email_alumno = ?`;
+    clase_boton = "escondiditos";
   } else if (rol_usuario === 2) {
     // Validación para profesores
     obtener_aula = `
       SELECT id, name, email_profesor
       FROM aulas_profesor
       WHERE id = ? AND email_profesor = ?`;
+    clase_boton= "";
   } else {
     return res.status(403).send('No tienes permiso para acceder a esta página.');
   }
@@ -571,7 +569,8 @@ app.get('/aula/:id', authMiddleware, (req, res) => {
       }
 
       // Renderizar los detalles del aula y sus páginas
-      res.render('aulaDetalle', { aula, paginas, });
+      console.log(clase_boton);
+      res.render('aulaDetalle', { aula, paginas, clase_boton });
     });
   });
 });
@@ -637,43 +636,6 @@ app.post('/aula/:id/editar', authMiddleware, (req, res) => {
     res.redirect('/dashboard/profesor');
   });
 });
-//----------------------
-
-app.get('/aula/:id/paginas', authMiddleware, (req, res) => {
-  if (req.user.rol !== 2) {
-    return res.status(403).send('No tienes permiso para acceder a esta página.');
-  }
-
-  const aulaId = req.params.id;
-  const email_profesor = req.user.email;
-
-  // Verifica que el profesor es el propietario del aula
-  const verificar_aula = `
-    SELECT id, name 
-    FROM aulas_profesor
-    WHERE id = ? AND email_profesor = ?`;
-
-  const obtener_paginas = `
-    SELECT id, titulo, texto, foto 
-    FROM paginas_aula
-    WHERE id_aula = ?`;
-
-  db.get(verificar_aula, [aulaId, email_profesor], (err, aula) => {
-    if (err || !aula) {
-      console.error('Error al verificar el aula:', err?.message);
-      return res.status(404).send('Aula no encontrada o no tienes permiso para acceder.');
-    }
-
-    db.all(obtener_paginas, [aulaId], (err, paginas) => {
-      if (err) {
-        console.error('Error al obtener las páginas:', err.message);
-        return res.status(500).send('Error al obtener las páginas.');
-      }
-
-      res.render('aulaDetalle', { aula, paginas });
-    });
-  });
-});
 
 app.get('/aula/:id/paginas/nueva', authMiddleware, (req, res) => {
   if (req.user.rol !== 2) {
@@ -684,15 +646,28 @@ app.get('/aula/:id/paginas/nueva', authMiddleware, (req, res) => {
   res.render('crearPagina', { aulaId });
 });
 
-app.post('/aula/:id/paginas/nueva', authMiddleware, (req, res) => {
+const upload = require('./routes/upload.js'); // Asegúrate de importar el archivo upload.js
+
+app.post('/aula/:id/paginas/nueva', authMiddleware, upload.single('foto'), (req, res) => {
   if (req.user.rol !== 2) {
+    console.error(`[ERROR] Usuario no autorizado intentó crear una página (Email: ${req.user.email})`);
     return res.status(403).send('No tienes permiso para realizar esta acción.');
   }
 
   const aulaId = req.params.id;
   const titulo = req.body.titulo;
   const texto = req.body.texto;
-  const foto = req.file ? `/uploads/${req.file.filename}` : null; // Manejo de fotos opcionales
+
+  console.log('El archivo req.file: ', req.file);
+  // Obtener la ruta relativa de la imagen cargada
+  const foto = req.file ? `/upload_images/${req.file.filename}` : null;
+  console.log(foto);
+
+  if (req.file) {
+    console.log(`[INFO] Imagen guardada correctamente: ${foto}`);
+  } else {
+    console.warn(`[WARN] No se subió ninguna imagen para esta página.`);
+  }
 
   const insertar_pagina = `
     INSERT INTO paginas_aula (id_aula, titulo, texto, foto)
@@ -700,14 +675,16 @@ app.post('/aula/:id/paginas/nueva', authMiddleware, (req, res) => {
 
   db.run(insertar_pagina, [aulaId, titulo, texto, foto], function (err) {
     if (err) {
-      console.error('Error al crear la página:', err.message);
+      console.error(`[ERROR] Error al crear la página: ${err.message}`);
       return res.status(500).send('Error al crear la página.');
     }
 
-    console.log('Página creada con éxito:', this.lastID);
+    console.log(`[INFO] Página creada con éxito (ID: ${this.lastID})`);
     res.redirect(`/aula/${aulaId}/paginas`);
   });
 });
+
+
 
 app.get('/aula/:id/paginas/:paginaId/editar', authMiddleware, (req, res) => {
   if (req.user.rol !== 2) {
