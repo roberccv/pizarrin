@@ -10,11 +10,11 @@
          <!-- Contenedor de Notificaciones -->
 <div class="notifications" id="notifications"></div>
     <h1>Detalles del Aula</h1>
-    <h2><%= aula.name %></h2>
-    <p>Profesor: <%= aula.email_profesor %></p>
+    <h2>Nombre aula: <%= aula.name %></h2>
+    <h3>Profesor: <%= aula.email_profesor %></h3>
 
     <!-- Páginas del Aula -->
-    <h3>Páginas de <%= aula.name %></h3>
+    <h4>Páginas de <%= aula.name %></h4>
     <button class="<%= clase_boton %>" onclick="window.location.href='/aula/<%= aula.id %>/paginas/nueva'">Crear Nueva Página</button>
     <div class="pages-list">
         <% if (paginas.length > 0) { %>

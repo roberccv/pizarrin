@@ -1,15 +1,26 @@
-<div class="content">
-    <h1>Crear Nueva Página</h1>
-    <form action="/aula/<%= aulaId %>/paginas/nueva" method="POST" enctype="multipart/form-data">
-            <label for="titulo">Título:</label>
-            <input type="text" id="titulo" name="titulo" required>
-          
-            <label for="texto">Texto:</label>
-            <textarea id="texto" name="texto" required></textarea>
-          
-            <label for="foto">Foto (opcional):</label>
-            <input type="file" id="foto" name="foto">
-          
-            <button type="submit">Crear Página</button>    
-    </form>
-</div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Página</title>
+    <link rel="stylesheet" href="/stylesheets/pizarrin.css">
+</head>
+<body>
+    <div class="contentC">
+        <h1>Crear Nueva Página</h1>
+        <form action="/aula/<%= aulaId %>/paginas/nueva" method="POST" enctype="multipart/form-data">
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo" name="titulo" required>
+            
+                <label for="texto">Texto:</label>
+                <textarea id="texto" name="texto" required></textarea>
+            
+                <label for="foto">Foto (opcional):</label>
+                <input type="file" id="foto" name="foto">
+            
+                <button type="submit">Crear Página</button>    
+        </form>
+    </div>
+</body>
+</html>
