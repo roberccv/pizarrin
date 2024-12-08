@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Aula</title>
+    <link rel="stylesheet" href="/stylesheets/pizarrin.css">
+</head>
+<body>
+<div class="browser-header">
+    <div class="menu-icon">&#9776;</div>
+    <div class="search-container">
+        <input type="text" placeholder="Search">
+        <button>🔍</button>
+    </div>
+    <div class="profile-icon">👤</div>
+</div>
+
+<div class="crear-aula-container">
+    <form action="/crear_aulas_profe" method="POST" class="crear-aula-form" id="crearAulaForm">
+        <label for="nombre-aula">NOMBRE AULA PUBLICA</label>
+        <input type="text" id="nombre-aula" name="nombreaula" placeholder="Ingrese el nombre del aula" required>
+
+        <label for="content">Contenido</label>
+        <textarea id="content" name="contenido" placeholder="Ingrese el contenido del aula pública" rows="5" required></textarea>
+
+        <button type="submit" class="submit-button">Solicitar</button>
+    </form>
+    <button class="volver-button" onclick="window.location.href='/dashboard/profesor'">Volver</button>
+</div>
+
+</body>
+</html>

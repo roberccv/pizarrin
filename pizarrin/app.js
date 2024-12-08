@@ -266,6 +266,13 @@ app.get('/crear_aula', authMiddleware, (req, res)=>{
   res.render('11-crearAula');
 });
 
+// app.get('/crear_aula_publica', authMiddleware, (req, res)=>{
+//   if (req.user.rol !== 2) {
+//     return res.status(403).send('No tienes permiso para acceder a esta página.');
+//   }
+//   res.render('crear_aula_publica');
+// });
+
 app.get('/dashboard/admin', authMiddleware, (req, res) => {
   if (req.user.rol !== 3) {
     return res.status(403).send('No tienes permiso para acceder a esta página.');
@@ -392,6 +399,12 @@ app.get('/logout', (req, res) => {
   res.clearCookie('user'); // Eliminar la cookie
   res.redirect('/login'); // Redirigir al login
 });
+
+
+// Cambiar contraseña
+// app.get('/cambiarContraseña', (req, res) => {
+// });
+
 
 
 

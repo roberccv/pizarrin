@@ -489,6 +489,11 @@ button.deny:hover {
     margin-left: 1180px;
 }
 
+#crear-aula-publica{
+    margin-left: 1340px;
+    margin-top: 10px;
+}
+
 .volver-button:hover , .botones_admin:hover, .edit-button:hover{
     background-color: #8EBF8E;
 }
