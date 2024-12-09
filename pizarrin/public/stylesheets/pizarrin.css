@@ -1,8 +1,9 @@
 /* Selecciona todos los elementos clicables */
+/* Selecciona todos los elementos clicables */
 a, button, [role="button"], .clickable {
     transition: transform 0.4s ease, text-shadow 0.4s ease;
-    cursor: pointer;
     margin-top: 10px;
+    cursor: url('/images/cursor2.png'), auto; /* Mantiene el cursor personalizado */
 }
 
 /* Efecto espectacular en hover */
@@ -10,15 +11,28 @@ a:hover, button:hover, .nav-links:hover, [role="button"]:hover, .clickable:hover
     transform: scale(1.03);
     text-shadow: 0px 0px 10px rgba(255, 255, 255, 1), 0px 0px 15px rgba(0, 255, 255, 0.8), 0px 0px 20px rgba(255, 0, 255, 0.8);
     animation: spectacular-wiggle 0.1s ease-in-out infinite alternate, color-shift 1s ease-in-out infinite;
+    cursor: url('/images/cursor2.png'), auto; /* Mantiene el cursor personalizado */
 }
 
+@keyframes color-shift {
+    0% {
+        text-shadow: 0px 0px 10px rgba(255, 255, 255, 1), 0px 0px 15px rgba(0, 255, 255, 0.8), 0px 0px 20px rgba(255, 0, 255, 0.8);
+        cursor: url('/images/cursor2.png'), auto; /* Cursor constante */
+    }
+    100% {
+        text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8), 0px 0px 15px rgba(0, 255, 255, 1), 0px 0px 20px rgba(255, 0, 255, 1);
+        cursor: url('/images/cursor2.png'), auto; /* Cursor constante */
+    }
+}
 
+/* Estilo general del cuerpo */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     cursor: url('/images/cursor2.png'), auto; /* Ruta de tu imagen */
 }
+
 
 .imagen-login{
     margin-top: 10;
@@ -109,8 +123,6 @@ body {
     text-align: center;
     margin-top: 50px;
     background-color: #ffffff;
-    margin-left: 30%;
-    margin-right: 26%;
 }
 
 .content2 h1 {
@@ -484,14 +496,14 @@ button.deny:hover {
     font-weight: bold;
     justify-content: space-between;
     margin-left: 15px;
+    margin-right: 15px;
 }
 #crear-aula{
-    margin-left: 1180px;
+    float: right;
 }
 
 #crear-aula-publica{
-    margin-left: 1340px;
-    margin-top: 10px;
+    float:right;
 }
 
 .volver-button:hover , .botones_admin:hover, .edit-button:hover{
