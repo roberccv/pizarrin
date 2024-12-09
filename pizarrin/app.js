@@ -168,9 +168,22 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', '01-pizarrin.html'));
 });
 
-app.get('/login', (req, res) => {
+app.get('/login', authMiddleware, (req, res) => {
+  // Si el usuario tiene un rol válido, redirigir al dashboard correspondiente
+  if (req.user && req.user.rol === 1) {
+    return res.redirect('/dashboard/alumno');
+  } else if (req.user && req.user.rol === 2) {
+    return res.redirect('/dashboard/profesor');
+  } else if (req.user && req.user.rol === 3) {
+    return res.redirect('/dashboard/admin');
+  }
+
+  // Si no tiene un rol válido, renderizar la página de inicio de sesión
   res.sendFile(path.join(__dirname, 'public', '05-login.html'));
 });
+
+
+
 
 app.get('/solicitar_cuenta', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', '06-solicitarCuenta.html'));
@@ -184,7 +197,7 @@ app.get('/solicitar_cuenta_alumno', authMiddleware, (req, res) => {
   }
 });
 
-app.get('/paginas_publicas', (req, res) => {
+app.get('/paginasPublicas', (req, res) => {
   const obtener_paginas_publicas = 'SELECT * FROM paginas_publicas';
 
   db.all(obtener_paginas_publicas, [], (err, rows) => {
@@ -300,7 +313,7 @@ app.get('/crear_paginas_publicas', authMiddleware, (req, res)=>{
   if (req.user.rol !== 2) {
     return res.status(403).send('No tienes permiso para acceder a esta página.');
   }
-  res.render('crear_paginas_publicas');
+  res.render('crearPaginasPublicas');
 });
 
 app.get('/dashboard/admin', authMiddleware, (req, res) => {
@@ -405,10 +418,27 @@ app.post('/autentificacion_login', (req, res) => {
 });
 
 
-//Middleware para verificar las coooookiiieees galletitiiiis
 function authMiddleware(req, res, next) {
   const userCookie = req.cookies.user;
 
+  // Si ya estamos en /login, no redirigir
+  if (req.path === '/login') {
+    try {
+      if (!userCookie) {
+        req.user = null; // No hay cookie, pero no hacemos redirección
+      } else {
+        const usuario = JSON.parse(userCookie); // Parsear la cookie
+        req.user = usuario; // Pasar los datos del usuario al request
+      }
+      return next(); // Continuar con el flujo
+    } catch (error) {
+      console.error('Error al procesar la cookie:', error.message);
+      req.user = null; // Cookie inválida, no redirigir en /login
+      return next();
+    }
+  }
+
+  // Lógica normal para rutas protegidas
   if (!userCookie) {
     console.log('No se encontró la cookie de usuario.');
     return res.redirect('/login?error=no_autenticado');
@@ -424,19 +454,16 @@ function authMiddleware(req, res, next) {
   }
 }
 
+
 //logout + cookies
 app.get('/logout', (req, res) => {
   res.clearCookie('user'); // Eliminar la cookie
-  res.redirect('/login'); // Redirigir al login
+  res.redirect('/'); // Redirigir al login
 });
 
-
-// Cambiar contraseña
-// app.get('/cambiarContraseña', (req, res) => {
-// });
-
-
-
+app.get('/cambiar_contrasena', async(req,res) => {
+  res.render('cambiarContrasena');
+})
 
 // Procesar registro de usuario
 app.post('/registro', async (req, res) => {
@@ -530,15 +557,15 @@ app.post('/registroROOT', async (req, res) => {
     res.status(500).send('Error al procesar la solicitud');
   }
 });
-app.post('/crear_paginas_publica', authMiddleware, (req, res) => {
-    const { titulo, texto } = req.body; // Obtener título y texto del cuerpo de la solicitud
+app.post('/crear_paginas_publica_post', authMiddleware, (req, res) => {
+    const { name, texto } = req.body; // Obtener título y texto del cuerpo de la solicitud
   
     // Query para insertar un pagina pública
-    const insertar_pagina_publica = 'INSERT INTO paginas_publicas (titulo, texto) VALUES (?, ?)';
+    const insertar_pagina_publica = 'INSERT INTO paginas_publicas (name, texto) VALUES (?, ?)';
   
     try {
       // Insertar el pagina pública en la base de datos
-      db.run(insertar_pagina_publica, [titulo, texto], function (err) {
+      db.run(insertar_pagina_publica, [name, texto], function (err) {
         if (err) {
           console.error('Error al registrar el paginas pública:', err.message);
           return res.status(500).send('Error al registrar el página pública');
@@ -552,6 +579,64 @@ app.post('/crear_paginas_publica', authMiddleware, (req, res) => {
       res.status(500).send('Error al procesar la solicitud');
     }  
 });
+
+// Ruta para cambiar la contraseña
+app.post('/cambiar_contrasena', async (req, res) => {
+  const email = req.body.email;
+  const currentPassword = req.body.currentPassword;
+  const newPassword = req.body.newPassword;
+
+  console.log(email, currentPassword, newPassword);
+
+  try {
+    console.log('Email recibido:', email);
+
+    // Consulta SQL con depuración
+    const query = 'SELECT * FROM users WHERE email = ?';
+    console.log('Ejecutando consulta:', query);
+
+    // Convertir `db.get` en una promesa para usar `await`
+    const user = await new Promise((resolve, reject) => {
+      db.get(query, [email], (err, row) => {
+        if (err) return reject(err);
+        resolve(row);
+      });
+    });
+
+    if (!user) {
+      console.error('Usuario no encontrado');
+      return res.status(404).send('Usuario no encontrado o no tienes permiso para acceder.');
+    }
+
+    console.log('Usuario encontrado:', user);
+
+    // Verificar la contraseña actual
+    const isPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordCorrect) {
+      console.error('Contraseña actual incorrecta.');
+      return res.status(400).send('Contraseña actual incorrecta.');
+    }
+
+    // Encriptar la nueva contraseña
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // Actualizar contraseña en la base de datos
+    const updateQuery = 'UPDATE users SET password = ? WHERE email = ?';
+    await new Promise((resolve, reject) => {
+      db.run(updateQuery, [hashedNewPassword, email], function (err) {
+        if (err) return reject(err);
+        resolve();
+      });
+    });
+
+    console.log('Contraseña actualizada exitosamente para el usuario:', email);
+    res.status(200).send('Contraseña cambiada exitosamente.');
+  } catch (error) {
+    console.error('Error al cambiar contraseña:', error.message);
+    res.status(500).send('Error interno del servidor.');
+  }
+});
+
 
 app.post('/crear_aulas_profe', authMiddleware, (req, res) => {
   const nombre = req.body.nombreaula;

@@ -23,13 +23,8 @@
             <% paginas.forEach(pagina => { %>
                 <div class="example">
                     <!-- Mostrar título y texto -->
-                    <h2><%= pagina.titulo %></h2>
+                    <h2><%= pagina.name %></h2>
                     <p><%= pagina.texto %></p>
-                    
-                    <!-- Botón para ver la página completa -->
-                    <button onclick="window.location.href='/pagina_publica/<%= pagina.id %>'">
-                        Ver página
-                    </button>
                 </div>
             <% }) %>
         <% } else { %>

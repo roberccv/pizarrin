@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambiar Contraseña</title>
+    <link rel="stylesheet" href="stylesheets/pizarrin.css">
+    <style>
+        .change-password-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 40px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .change-password-container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .change-password-container label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .change-password-container input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .change-password-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4682b4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .change-password-container button:hover {
+            background-color: #315f7d;
+        }
+
+        .change-password-container .error-message,
+        .change-password-container .success-message {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .error-message {
+            color: red;
+        }
+
+        .success-message {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+<div class="change-password-container">
+    <h1>Cambiar Contraseña</h1>
+
+    <form action="/cambiar_contrasena" method="POST" id="change-password-form">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Tu correo electrónico" required>
+
+        <label for="current-password">Contraseña Actual</label>
+        <input type="password" id="current-password" name="currentPassword" placeholder="********" required>
+
+        <label for="new-password">Nueva Contraseña</label>
+        <input type="password" id="new-password" name="newPassword" placeholder="********" required>
+
+        <label for="confirm-password">Confirmar Nueva Contraseña</label>
+        <input type="password" id="confirm-password" name="confirmPassword" placeholder="********" required>
+
+        <button type="submit">Actualizar Contraseña</button>
+    </form>
+
+    <!-- Mensajes de error o éxito -->
+    <p class="error-message" id="error-message">Las contraseñas no coinciden o son inválidas.</p>
+    <p class="success-message" id="success-message">¡Contraseña cambiada exitosamente!</p>
+</div>
+
+<script>
+    const form = document.getElementById('change-password-form');
+    const errorMessage = document.getElementById('error-message');
+    const successMessage = document.getElementById('success-message');
+
+    form.addEventListener('submit', function (event) {
+        const newPassword = document.getElementById('new-password').value;
+        const confirmPassword = document.getElementById('confirm-password').value;
+
+        // Validar que las contraseñas coincidan
+        if (newPassword !== confirmPassword) {
+            event.preventDefault();
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        } else {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'block';
+        }
+    });
+</script>
+</body>
+</html>
