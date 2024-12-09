@@ -119,7 +119,7 @@ db.serialize(() => {
 
     //Crear la tabla 'aulas-profesor-publicas'
     db.run(`
-      CREATE TABLE IF NOT EXISTS aula_public (
+      CREATE TABLE IF NOT EXISTS paginas_publicas (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       texto TEXT NOT NULL
@@ -184,9 +184,20 @@ app.get('/solicitar_cuenta_alumno', authMiddleware, (req, res) => {
   }
 });
 
-app.get('/paginasPublicas', (req, res) => {
-  res.render('04-paginasPublicas');
+app.get('/paginas_publicas', (req, res) => {
+  const obtener_paginas_publicas = 'SELECT * FROM paginas_publicas';
+
+  db.all(obtener_paginas_publicas, [], (err, rows) => {
+    if (err) {
+      console.error('Error al obtener páginas públicas:', err.message);
+      return res.status(500).send('Error al obtener páginas públicas');
+    }
+
+    // Renderiza la vista EJS con los datos de las páginas
+    res.render('04-paginasPublicas', { paginas: rows });
+  });
 });
+
 
 // Bloqueo el crearCuentas para que solo puedan acceder los administradores
 app.get('/crearCuentas', authMiddleware, (req, res) => {
@@ -285,11 +296,11 @@ app.get('/crear_aula', authMiddleware, (req, res)=>{
   res.render('11-crearAula');
 });
 
-app.get('/crear_aula_publica', authMiddleware, (req, res)=>{
+app.get('/crear_paginas_publicas', authMiddleware, (req, res)=>{
   if (req.user.rol !== 2) {
     return res.status(403).send('No tienes permiso para acceder a esta página.');
   }
-  res.render('crear_aula_publica');
+  res.render('crear_paginas_publicas');
 });
 
 app.get('/dashboard/admin', authMiddleware, (req, res) => {
@@ -519,61 +530,27 @@ app.post('/registroROOT', async (req, res) => {
     res.status(500).send('Error al procesar la solicitud');
   }
 });
-app.post('/crear_aulas_publica', authMiddleware, (req, res) => {
+app.post('/crear_paginas_publica', authMiddleware, (req, res) => {
+    const { titulo, texto } = req.body; // Obtener título y texto del cuerpo de la solicitud
   
-  const nombre = req.body.nombreaula;
-
-  // Query para insertar en la tabla `aulas_profesor`
-  const insertar_aula = 'INSERT INTO aulas_profesor (name, email_profesor) VALUES (?, ?)';
-  // Query para verificar si los correos existen y son alumnos
-  const verificar_alumnos = 'SELECT email FROM USERS WHERE email IN (' + emails_alumnos.map(() => '?').join(',') + ') AND rol = 1';
-
-  try {
-    // Verificar si los correos pertenecen a alumnos registrados
-    db.all(verificar_alumnos, emails_alumnos, (err, rows) => {
-      if (err) {
-        console.error('Error al consultar la base de datos:', err.message);
-        return res.status(500).send('Error interno del servidor al verificar los alumnos');
-      }
-
-      const correos_validos = rows.map(row => row.email); // Correos válidos devueltos por la consulta
-      const correos_invalidos = emails_alumnos.filter(email => !correos_validos.includes(email)); // Correos que no son válidos
-
-      if (correos_invalidos.length > 0) {
-        console.error('Correos no válidos:', correos_invalidos);
-        return res.status(400).send(`Los siguientes correos no son válidos o no pertenecen a alumnos: ${correos_invalidos.join(', ')}`);
-      }
-
-      // Si todos los correos son válidos, insertar el aula
-      db.run(insertar_aula, [nombre, email_profe], function (err) {
+    // Query para insertar un pagina pública
+    const insertar_pagina_publica = 'INSERT INTO paginas_publicas (titulo, texto) VALUES (?, ?)';
+  
+    try {
+      // Insertar el pagina pública en la base de datos
+      db.run(insertar_pagina_publica, [titulo, texto], function (err) {
         if (err) {
-          console.error('Error al registrar el aula:', err.message);
-          return res.status(500).send('Error al registrar el aula');
+          console.error('Error al registrar el paginas pública:', err.message);
+          return res.status(500).send('Error al registrar el página pública');
         }
-
-        const idAula = this.lastID; // Obtener el ID del aula recién creada
-        console.log('Aula registrada con éxito con ID:', idAula);
-
-        // Insertar cada alumno en la tabla `aulas_alumnos`
-        correos_validos.forEach(email_alumno => {
-          db.run(insertar_alumno, [idAula, email_alumno], function (err) {
-            if (err) {
-              console.error(`Error al insertar el alumno (${email_alumno}):`, err.message);
-              // No detenemos todo el proceso, pero podrías manejar errores adicionales aquí si es necesario
-            } else {
-              console.log(`Alumno con correo ${email_alumno} agregado al aula con ID: ${idAula}`);
-            }
-          });
-        });
-
-        // Responder al cliente después de completar los inserts
-        res.status(200).send('Aula y alumnos creados con éxito');
+  
+        console.log('Página pública registrada con éxito con ID:', this.lastID);
+        res.status(200).send('Página pública creada con éxito');
       });
-    });
-  } catch (error) {
-    console.error('Error al procesar la solicitud:', error.message);
-    res.status(500).send('Error al procesar la solicitud');
-  }
+    } catch (error) {
+      console.error('Error al procesar la solicitud:', error.message);
+      res.status(500).send('Error al procesar la solicitud');
+    }  
 });
 
 app.post('/crear_aulas_profe', authMiddleware, (req, res) => {

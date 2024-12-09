@@ -19,25 +19,23 @@
     <!-- Main Content -->
     <div class="contentP">
         <h1>Nuestra pizarra más popular</h1> <!-- Centrar el título -->
-        <div class="examples">
-            <!-- Ejemplo 1 -->
-            <div class="example">                
-                <h2>Ejemplo 1</h2>
-                <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua..."</p>
-                <img src="images/aguacate.png" alt="Ejemplo 1" width="200" height="200">
-            </div>
-            <!-- Ejemplo 2 -->
-            <div class="example">
-                <img src="images/aguacate.png" alt="Ejemplo 2" width="200" height="200">
-                <h2>Ejemplo 2</h2>
-                <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua..."</p>
-            </div>
-            <!-- Ejemplo 3 -->
-            <div class="example">
-                <h2>Ejemplo 3</h2>
-                <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua..."</p>
-                <img src="images/aguacate.png" alt="Ejemplo 1" width="200" height="200">
-            </div>
+        <% if (paginas && paginas.length > 0) { %>
+            <% paginas.forEach(pagina => { %>
+                <div class="example">
+                    <!-- Mostrar título y texto -->
+                    <h2><%= pagina.titulo %></h2>
+                    <p><%= pagina.texto %></p>
+                    
+                    <!-- Botón para ver la página completa -->
+                    <button onclick="window.location.href='/pagina_publica/<%= pagina.id %>'">
+                        Ver página
+                    </button>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p>No hay páginas públicas disponibles.</p>
+        <% } %>
+
         </div>
     </div>
 
