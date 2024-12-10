@@ -7,8 +7,21 @@
     <link rel="stylesheet" href="/stylesheets/pizarrin.css">
 </head>
 <body>
-    <div class="browser-header"></div>
+    <div class="browser-header">
+    <div class="menu-icon" onclick="window.location.href='/dashboard/profesor'">🏠</div>
+        <div class="nav-links">
+            <div class="dropdown">
+                <a class="dropdown-toggle"><%= email %></a>
+                <div class="dropdown-menu">
+                    <button onclick="window.location.href='/logout'">Logout</button>
+                    <button onclick="window.location.href='/cambiar_contrasena'">Cambiar contraseña</button>
+                </div>
+            </div>
+        </div>
+        <div class="profile-icon">👤</div>
+    </div>
     <div class="contentB">
+
         <h1>Editar Página</h1>
         <form action="/aula/<%= aulaId %>/paginas/<%= pagina.id %>/editar" method="POST">
             <!-- Campo para el título -->
@@ -32,6 +45,9 @@
             <!-- Botón para guardar cambios -->
             <button type="submit">Guardar Cambios</button>
         </form>
+    </div>
+    <div>
+        <button class="botonVolver" onclick="history.back()">Volver</button>
     </div>
 </body>
 </html>

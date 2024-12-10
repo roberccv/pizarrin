@@ -7,13 +7,18 @@
     <link rel="stylesheet" href="stylesheets/pizarrin.css">
 </head>
 <body>
-<div class="browser-header">
-    <!-- <div class="menu-icon">&#9776;</div>
-    <div class="search-container">
-        <input type="text" placeholder="Search">
-        <button>🔍</button>
+  <div class="browser-header">
+    <div class="menu-icon" onclick="window.location.href = '/dashboard/profesor'">🏠</div>
+    <div class="nav-links">
+        <div class="dropdown">
+            <a href="#" class="dropdown-toggle"><%= email %></a>
+            <div class="dropdown-menu">
+                <button onclick="window.location.href='/logout'">Logout</button>
+                <button onclick="window.location.href='/cambiar_contrasena'">Cambiar contraseña</button>
+            </div>
+        </div>
     </div>
-    <div class="profile-icon" onclick="window.location.href='/autentificacion_login'">👤</div> -->
+    <div class="profile-icon">👤</div>
 </div>
 
 <div class="solicitar-cuenta-container">

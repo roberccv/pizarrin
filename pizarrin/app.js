@@ -190,10 +190,11 @@ app.get('/solicitar_cuenta', (req, res) => {
 });
 
 app.get('/solicitar_cuenta_alumno', authMiddleware, (req, res) => {
+  const email = req.user.email;
   if (req.user.rol !== 2) {
     return res.status(403).send('No tienes permiso para acceder a esta página.');
   } else{
-    res.render('12-solicitarCuentaAlumno');
+    res.render('12-solicitarCuentaAlumno', {email});
   }
 });
 
@@ -214,11 +215,11 @@ app.get('/paginasPublicas', (req, res) => {
 
 // Bloqueo el crearCuentas para que solo puedan acceder los administradores
 app.get('/crearCuentas', authMiddleware, (req, res) => {
-  if (req.user.rol !== 3) {
+  const email =req.user.email;
+  if (req.user.rol !==3) {
     return res.status(403).send('No tienes permiso para acceder a esta página.');
-  } else{
-    res.render('crearCuentas');
   }
+    res.render('crearCuentas', {email});
 });
 
 app.get('/solicitudes', authMiddleware, (req, res) => {
@@ -226,7 +227,7 @@ app.get('/solicitudes', authMiddleware, (req, res) => {
     return res.status(403).send('No tienes permiso para acceder a esta página.');
   }
   const query = 'SELECT * FROM solicitudes_registro';
-
+  const email =req.user.email;
   db.all(query, [], (err, rows) => {
     if (err) {
       console.error('Error al obtener solicitudes:', err.message);
@@ -234,7 +235,7 @@ app.get('/solicitudes', authMiddleware, (req, res) => {
     }
 
     // Renderiza el archivo EJS y pasa las solicitudes como datos
-    res.render('08-solicitudes', { solicitudes: rows });
+    res.render('08-solicitudes', { solicitudes: rows , email});
   });
 });
 
@@ -303,17 +304,19 @@ app.get('/dashboard/profesor', authMiddleware, (req, res) => {
 
 
 app.get('/crear_aula', authMiddleware, (req, res)=>{
+  const email = req.user.email;
   if (req.user.rol !== 2) {
     return res.status(403).send('No tienes permiso para acceder a esta página.');
   }
-  res.render('11-crearAula');
+  res.render('11-crearAula', { email });
 });
 
 app.get('/crear_paginas_publicas', authMiddleware, (req, res)=>{
+  const email = req.user.email
   if (req.user.rol !== 2) {
     return res.status(403).send('No tienes permiso para acceder a esta página.');
   }
-  res.render('crearPaginasPublicas');
+  res.render('crearPaginasPublicas', {email});
 });
 
 app.get('/dashboard/admin', authMiddleware, (req, res) => {
@@ -462,7 +465,8 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/cambiar_contrasena', async(req,res) => {
-  res.render('cambiarContrasena');
+  const email = req.user.email;
+  res.render('cambiarContrasena', {email});
 })
 
 // Procesar registro de usuario
@@ -750,8 +754,8 @@ app.get('/aula/:id', authMiddleware, (req, res) => {
       }
 
       // Renderizar los detalles del aula y sus páginas
-      console.log(clase_boton);
-      res.render('aulaDetalle', { aula, paginas, clase_boton });
+      console.log(rol_usuario);
+      res.render('aulaDetalle', { aula, paginas, clase_boton, rol_usuario, email_usuario});
     });
   });
 });
@@ -785,7 +789,7 @@ app.get('/aula/:id/editar', authMiddleware, (req, res) => {
     }
 
     // Renderizar el formulario de edición
-    res.render('editar-aula', { aula });
+    res.render('editar-aula', { aula, email_profesor });
   });
 });
 
@@ -822,9 +826,10 @@ app.get('/aula/:id/paginas/nueva', authMiddleware, (req, res) => {
   if (req.user.rol !== 2) {
     return res.status(403).send('No tienes permiso para acceder a esta página.');
   }
+  const email = req.user.email;
 
   const aulaId = req.params.id;
-  res.render('crearPagina', { aulaId });
+  res.render('crearPagina', { aulaId , email});
 });
 
 const upload = require('./routes/upload.js'); // Asegúrate de importar el archivo upload.js
@@ -860,14 +865,11 @@ app.post('/aula/:id/paginas/nueva', authMiddleware, upload.single('foto'), (req,
   });
 });
 
-
-
-
 app.get('/aula/:id/paginas/:paginaId/editar', authMiddleware, (req, res) => {
   if (req.user.rol !== 2) {
     return res.status(403).send('No tienes permiso para acceder a esta página.');
   }
-
+  const email = req.user.email;
   const { id: aulaId, paginaId } = req.params;
 
   const obtener_pagina = `
@@ -881,7 +883,7 @@ app.get('/aula/:id/paginas/:paginaId/editar', authMiddleware, (req, res) => {
       return res.status(404).send('Página no encontrada.');
     }
 
-    res.render('editar-pagina', { pagina, aulaId });
+    res.render('editar-pagina', { pagina, aulaId, email });
   });
 });
 
@@ -917,6 +919,7 @@ app.post('/aula/:id/paginas/:paginaId/editar', authMiddleware, (req, res) => {
 
 
 app.post('/aula/:id/paginas/:paginaId/eliminar', authMiddleware, (req, res) => {
+  console.log ("entro eliminar")
   if (req.user.rol !== 2) {
     return res.status(403).send('No tienes permiso para realizar esta acción.');
   }

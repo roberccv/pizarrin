@@ -5,67 +5,87 @@
     <script src="/socket.io/socket.io.js"></script>
     <link rel="stylesheet" href="/stylesheets/pizarrin.css">
 </head>
-
-<div class="browser-header"></div>
-
-<div class="contentA">
-    <!-- Detalles del Aula -->
-         <!-- Contenedor de Notificaciones -->
-<div class="notifications" id="notifications"></div>
-    <h1>Detalles del Aula</h1>
-    <h2>Nombre aula: <%= aula.name %></h2>
-    <h3>Profesor: <%= aula.email_profesor %></h3>
-
-    <!-- Páginas del Aula -->
-    <h4>Páginas de <%= aula.name %></h4>
-    <button class="<%= clase_boton %>" onclick="window.location.href='/aula/<%= aula.id %>/paginas/nueva'">Crear Nueva Página</button>
-    <div class="pages-list">
-        <% if (paginas.length > 0) { %>
-            <% paginas.forEach(pagina => { %>
-                <div class="page">
-                    <h2><%= pagina.titulo %></h2>
-                    <p><%= pagina.texto %></p>
-                    <% if (pagina.foto) { %>
-                        <img src="<%= pagina.foto %>" alt="Foto de la página" width="200">
-                    <% } %>                    
-                        <button class="<%= clase_boton %>" onclick="window.location.href='/aula/<%= aula.id %>/paginas/<%= pagina.id %>/editar'"> 
-                            Editar Página
-                        </button>                    
+<body>
+    <div class="browser-header">
+        <%if (rol_usuario == 1) { %>
+            <div class="menu-icon" onclick="window.location.href='/dashboard/alumno'">🏠</div>
+        <%  } else { %>
+            <div class="menu-icon" onclick="window.location.href='/dashboard/profesor'">🏠</div>
+        <%}%>
+        <div class="nav-links">
+            <div class="dropdown">
+                <a href="#" class="dropdown-toggle"><%= email_usuario %></a>
+                <div class="dropdown-menu">
+                    <button onclick="window.location.href='/logout'">Logout</button>
+                    <button onclick="window.location.href='/cambiar_contrasena'">Cambiar contraseña</button>
                 </div>
-            <% }) %>
-        <% } else { %>
-            <p>No hay páginas creadas para este aula.</p>
-        <% } %>
+            </div>
+        </div>
+        <div class="profile-icon">👤</div>
     </div>
-<script>
-    const socket = io(); // Conexión con el servidor Socket.IO
+    <div class="contentA">
+        <!-- Detalles del Aula -->
+            <!-- Contenedor de Notificaciones -->
+    <div class="notifications" id="notifications"></div>
+        <h1>Detalles del Aula</h1>
+        <h2>Nombre aula: <%= aula.name %></h2>
+        <h3>Profesor: <%= aula.email_profesor %></h3>
 
-    // Obtener el aulaId desde el servidor
-    const aulaId = "<%= aula.id %>"; // Variable dinámica generada por EJS con el ID del aula
-    
-    // Unirse a la sala del aula específica
-    socket.emit('joinAula', { aulaId });
-    
-    // Escucha el evento 'notificacion' desde el servidor
-    socket.on('notificacion', (data) => {
-      console.log('[INFO] Notificación recibida:', data.message);
-    
-      // Selecciona el contenedor de notificaciones
-      const notificationsDiv = document.getElementById('notifications');
-    
-      // Crea un nuevo elemento para la notificación
-      const notification = document.createElement('div');
-      notification.classList.add('notification'); // Aplica estilo CSS
-      notification.innerText = data.message; // Mensaje enviado desde el servidor
-    
-      // Añade la notificación al contenedor
-      notificationsDiv.appendChild(notification);
-    
-      // Elimina la notificación después de 5 segundos
-      setTimeout(() => {
-        notificationsDiv.removeChild(notification);
-      }, 5000);
-    });
-    
-</script>
-</div>
+        <!-- Páginas del Aula -->
+        <h4>Páginas de <%= aula.name %></h4>
+        <button class="<%= clase_boton %>" onclick="window.location.href='/aula/<%= aula.id %>/paginas/nueva'">Crear Nueva Página</button>
+        <div class="pages-list">
+            <% if (paginas.length > 0) { %>
+                <% paginas.forEach(pagina => { %>
+                    <div class="page">
+                        <h2><%= pagina.titulo %></h2>
+                        <p><%= pagina.texto %></p>
+                        <% if (pagina.foto) { %>
+                            <img src="<%= pagina.foto %>" alt="Foto de la página" width="200">
+                        <% } %>                    
+                            <button class="<%= clase_boton %>" onclick="window.location.href='/aula/<%= aula.id %>/paginas/<%= pagina.id %>/editar'"> 
+                                Editar Página
+                            </button>
+                            <form method="POST" action="/aula/<%= aula.id %>/paginas/<%= pagina.id %>/eliminar" style="display: inline;">
+                                <button type="submit" class="<%= clase_boton %>">Eliminar Página</button>
+                            </form>
+                                                
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p>No hay páginas creadas para este aula.</p>
+            <% } %>
+        </div>
+    <script>
+        const socket = io(); // Conexión con el servidor Socket.IO
+
+        // Obtener el aulaId desde el servidor
+        const aulaId = "<%= aula.id %>"; // Variable dinámica generada por EJS con el ID del aula
+        
+        // Unirse a la sala del aula específica
+        socket.emit('joinAula', { aulaId });
+        
+        // Escucha el evento 'notificacion' desde el servidor
+        socket.on('notificacion', (data) => {
+        console.log('[INFO] Notificación recibida:', data.message);
+        
+        // Selecciona el contenedor de notificaciones
+        const notificationsDiv = document.getElementById('notifications');
+        
+        // Crea un nuevo elemento para la notificación
+        const notification = document.createElement('div');
+        notification.classList.add('notification'); // Aplica estilo CSS
+        notification.innerText = data.message; // Mensaje enviado desde el servidor
+        
+        // Añade la notificación al contenedor
+        notificationsDiv.appendChild(notification);
+        
+        // Elimina la notificación después de 5 segundos
+        setTimeout(() => {
+            notificationsDiv.removeChild(notification);
+        }, 5000);
+        });
+        
+    </script>
+    </div>
+</body>
