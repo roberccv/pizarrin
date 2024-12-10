@@ -624,3 +624,10 @@ button.deny:hover {
     font-size: 14px;
 }
 
+.notification{
+    background-color: rgba(243, 46, 7, 0.506);
+    border:rgba(243, 46, 7, 0.506), solid, 1px;
+    padding:2px;
+    border-radius: 9px;
+    color: #ffff; 
+}

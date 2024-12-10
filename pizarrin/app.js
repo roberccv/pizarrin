@@ -465,8 +465,7 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/cambiar_contrasena', async(req,res) => {
-  const email = req.user.email;
-  res.render('cambiarContrasena', {email});
+  res.render('cambiarContrasena');
 })
 
 // Procesar registro de usuario
