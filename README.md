@@ -32,7 +32,7 @@ Clona este proyecto en tu máquina local:
 git clone https://github.com/roberccv/pizarrin.git
 ```
 
-### 3. Iniciar el servidor
+### 2. Iniciar el servidor
 Ejecuta el siguiente comando para iniciar el servidor:
 ```bash
 npm start
