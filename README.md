@@ -15,7 +15,7 @@ Cada autor ha contribuido significativamente en distintas áreas del proyecto, i
 
 ¿Te gustaría personalizarlo aún más o añadir detalles específicos de las contribuciones? 😊
 
-## 🚀 Requisitos
+## 🚀 Tecnologias
 
 1. **MySQL**: Asegúrate de tener MySQL instalado en tu máquina.
 2. **Node.js**: Versión mínima 14.x.
@@ -45,7 +45,9 @@ El servidor estará disponible en [http://localhost:3000](http://localhost:3000)
 ## 🛠️ Funcionalidades
 
 ### **1. Registro de usuarios:**
-   - Crea una nueva cuenta ingresando un correo electrónico, un nombre y una contraseña.
+   - El administrador puede crear las cuentas que considere con los roles que considere.
+   - Los profesores se crean una nueva cuenta ingresando un correo electrónico, un nombre y una contraseña. Esta cuenta debe ser aceptada por el administrador para pasar a ser funcional.
+   - Los profesores crean las cuentas para los alumnos
    - Las contraseñas se almacenan encriptadas para mayor seguridad.
    
 ### **2. Gestión de Usuarios**
@@ -58,8 +60,9 @@ El servidor estará disponible en [http://localhost:3000](http://localhost:3000)
 ### 3. **Inicio de sesión:**
    - Los usuarios pueden autenticarse con sus credenciales y acceder al sistema.
 
-### **4. Validación de contraseñas:**
+### **4. Gestión de contraseñas:**
    - Verificación de contraseñas encriptadas con `bcrypt`.
+   - Los alumnos y los profesores pueden cambiar sus contraseñas, especialmente pensado para los alumnos ya que el sistema les crea una por defecto cuando se crea la cuenta.
 
 ### **5. Funcionalidades del Profesor**
    *a. Creación de Aulas*
@@ -84,10 +87,8 @@ El servidor estará disponible en [http://localhost:3000](http://localhost:3000)
 ### **7. Notificaciones en Tiempo Real**
 El sistema utiliza **Sockets (Socket.IO)** para notificar a los alumnos en tiempo real sobre cualquier cambio en las páginas del aula:
 - **Notificaciones emitidas**:
-  - Creación de nuevas páginas.
   - Modificación del contenido existente.
-  - Eliminación de páginas.
-- Los alumnos conectados a un aula reciben automáticamente las actualizaciones relevantes.
+- Los alumnos conectados a un aula reciben automáticamente las actualizaciones.
 
 ### **8. Páginas Públicas**
 - Las páginas públicas creadas por el profesor son visibles para cualquier usuario invitado, sin necesidad de registro.
