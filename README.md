@@ -3,7 +3,7 @@
 
 👨🏼‍💻Sergio Díaz Paricio | **sdiazpar** 
 
-👨🏿‍💻Roberto Cinos Vega | **roberccv**
+👨🏻‍💻Roberto Cinos Vega | **roberccv**
 
 ### **Contribuciones**
 Cada autor ha contribuido significativamente en distintas áreas del proyecto, incluyendo:
